@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE language [
+        <!ELEMENT language ANY>
+        <!ELEMENT locale ANY>
+        <!ELEMENT text (source,output)>
+        <!ELEMENT source ANY>
+        <!ELEMENT output ANY>
+        <!ATTLIST language
+                src       CDATA    #REQUIRED
+                output    CDATA    #REQUIRED
+                name      CDATA    #REQUIRED
+                native    CDATA    #REQUIRED
+                >
+        <!ATTLIST locale
+                region    CDATA    #REQUIRED
+                name      CDATA    #REQUIRED
+                native    CDATA    #REQUIRED
+                >
+        ]>
+<language src="en" output="el" name="Greek" native="Ελληνικά">
+    <locale region="GR" name="Greece" native="Ελλάδα">
+        <text>
+            <source>Forms</source>
+            <output>Έντυπα</output>
+        </text>
+        <text>
+            <source>There are currently no forms.</source>
+            <output>Δεν υπάρχουν έντυπα.</output>
+        </text>
+        <text>
+            <source>There are currently no form submissions.</source>
+            <output>Δεν υπάρχουν υποβολές φορμών.</output>
+        </text>
+        <text>
+            <source>Method</source>
+            <output>μέθοδος</output>
+        </text>
+        <text>
+            <source>Use CAPTCHA</source>
+            <output>Χρησιμοποιήστε CAPTCHA</output>
+        </text>
+        <text>
+            <source>Use CSRF</source>
+            <output>Χρησιμοποιήστε CSRF</output>
+        </text>
+        <text>
+            <source>Subject</source>
+            <output>θέμα</output>
+        </text>
+        <text>
+            <source>Reply To</source>
+            <output>Απάντηση σε</output>
+        </text>
+        <text>
+            <source>Action</source>
+            <output>δράση</output>
+        </text>
+        <text>
+            <source>Redirect</source>
+            <output>Ανακατεύθυνση</output>
+        </text>
+        <text>
+            <source>Form Attributes</source>
+            <output>Χαρακτηριστικά μορφή</output>
+        </text>
+        <text>
+            <source>Submit Value</source>
+            <output>Υποβολή Αξία</output>
+        </text>
+        <text>
+            <source>Submit Attributes</source>
+            <output>Υποβολή Χαρακτηριστικά</output>
+        </text>
+        <text>
+            <source>That form name already exists. The name must be unique.</source>
+            <output>Αυτό το όνομα φόρμας υπάρχει ήδη. Το όνομα πρέπει να είναι μοναδικό.</output>
+        </text>
+        <text>
+            <source>That form does not exist.</source>
+            <output>Το εν λόγω έντυπο δεν υπάρχει.</output>
+        </text>
+        <text>
+            <source>Enter Code</source>
+            <output>Εισάγετε τον κωδικό</output>
+        </text>
+    </locale>
+</language>

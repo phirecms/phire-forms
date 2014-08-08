@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE language [
+        <!ELEMENT language ANY>
+        <!ELEMENT locale ANY>
+        <!ELEMENT text (source,output)>
+        <!ELEMENT source ANY>
+        <!ELEMENT output ANY>
+        <!ATTLIST language
+                src       CDATA    #REQUIRED
+                output    CDATA    #REQUIRED
+                name      CDATA    #REQUIRED
+                native    CDATA    #REQUIRED
+                >
+        <!ATTLIST locale
+                region    CDATA    #REQUIRED
+                name      CDATA    #REQUIRED
+                native    CDATA    #REQUIRED
+                >
+        ]>
+<language src="en" output="he" name="Hebrew" native="עברית">
+    <locale region="IL" name="Israel" native="ישראל">
+        <text>
+            <source>Forms</source>
+            <output>טפסים</output>
+        </text>
+        <text>
+            <source>There are currently no forms.</source>
+            <output>כרגע אין טפסים.</output>
+        </text>
+        <text>
+            <source>There are currently no form submissions.</source>
+            <output>כרגע אין הגשות טופס.</output>
+        </text>
+        <text>
+            <source>Method</source>
+            <output>שיטה</output>
+        </text>
+        <text>
+            <source>Use CAPTCHA</source>
+            <output>השתמש CAPTCHA</output>
+        </text>
+        <text>
+            <source>Use CSRF</source>
+            <output>השתמש CSRF</output>
+        </text>
+        <text>
+            <source>Subject</source>
+            <output>נושא</output>
+        </text>
+        <text>
+            <source>Reply To</source>
+            <output>תגובה כדי</output>
+        </text>
+        <text>
+            <source>Action</source>
+            <output>פעולה</output>
+        </text>
+        <text>
+            <source>Redirect</source>
+            <output>להפנות את</output>
+        </text>
+        <text>
+            <source>Form Attributes</source>
+            <output>תכונות צורה</output>
+        </text>
+        <text>
+            <source>Submit Value</source>
+            <output>שלח ערך</output>
+        </text>
+        <text>
+            <source>Submit Attributes</source>
+            <output>שלח תכונות</output>
+        </text>
+        <text>
+            <source>That form name already exists. The name must be unique.</source>
+            <output>כי שם טופס כבר קיים.השם חייב להיות ייחודי.</output>
+        </text>
+        <text>
+            <source>That form does not exist.</source>
+            <output>הטופס שאינו קיים.</output>
+        </text>
+        <text>
+            <source>Enter Code</source>
+            <output>הזן את הקוד</output>
+        </text>
+    </locale>
+</language>

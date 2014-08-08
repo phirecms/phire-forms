@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE language [
+        <!ELEMENT language ANY>
+        <!ELEMENT locale ANY>
+        <!ELEMENT text (source,output)>
+        <!ELEMENT source ANY>
+        <!ELEMENT output ANY>
+        <!ATTLIST language
+                src       CDATA    #REQUIRED
+                output    CDATA    #REQUIRED
+                name      CDATA    #REQUIRED
+                native    CDATA    #REQUIRED
+                >
+        <!ATTLIST locale
+                region    CDATA    #REQUIRED
+                name      CDATA    #REQUIRED
+                native    CDATA    #REQUIRED
+                >
+        ]>
+<language src="en" output="pt" name="Portuguese" native="Português">
+    <locale region="PT" name="Portugal" native="Portugal">
+        <text>
+            <source>Forms</source>
+            <output>Formas</output>
+        </text>
+        <text>
+            <source>There are currently no forms.</source>
+            <output>Atualmente não há formas.</output>
+        </text>
+        <text>
+            <source>There are currently no form submissions.</source>
+            <output>Atualmente não há envios de formulários.</output>
+        </text>
+        <text>
+            <source>Method</source>
+            <output>Método</output>
+        </text>
+        <text>
+            <source>Use CAPTCHA</source>
+            <output>Use CAPTCHA</output>
+        </text>
+        <text>
+            <source>Use CSRF</source>
+            <output>Use CSRF</output>
+        </text>
+        <text>
+            <source>Subject</source>
+            <output>Sssunto</output>
+        </text>
+        <text>
+            <source>Reply To</source>
+            <output>Responder A</output>
+        </text>
+        <text>
+            <source>Action</source>
+            <output>Ação</output>
+        </text>
+        <text>
+            <source>Redirect</source>
+            <output>Redirecionar</output>
+        </text>
+        <text>
+            <source>Form Attributes</source>
+            <output>Atributos de formulário</output>
+        </text>
+        <text>
+            <source>Submit Value</source>
+            <output>Enviar Valor</output>
+        </text>
+        <text>
+            <source>Submit Attributes</source>
+            <output>Enviar Atributos</output>
+        </text>
+        <text>
+            <source>That form name already exists. The name must be unique.</source>
+            <output>Esse nome do formulário já existe. O nome deve ser único.</output>
+        </text>
+        <text>
+            <source>That form does not exist.</source>
+            <output>Essa forma não existe.</output>
+        </text>
+        <text>
+            <source>Enter Code</source>
+            <output>Digite o Código</output>
+        </text>
+    </locale>
+</language>

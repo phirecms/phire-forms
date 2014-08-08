@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE language [
+        <!ELEMENT language ANY>
+        <!ELEMENT locale ANY>
+        <!ELEMENT text (source,output)>
+        <!ELEMENT source ANY>
+        <!ELEMENT output ANY>
+        <!ATTLIST language
+                src       CDATA    #REQUIRED
+                output    CDATA    #REQUIRED
+                name      CDATA    #REQUIRED
+                native    CDATA    #REQUIRED
+                >
+        <!ATTLIST locale
+                region    CDATA    #REQUIRED
+                name      CDATA    #REQUIRED
+                native    CDATA    #REQUIRED
+                >
+        ]>
+<language src="en" output="ar" name="Arabic" native="العربية">
+    <locale region="EG" name="Egypt" native="مصر">
+        <text>
+            <source>Forms</source>
+            <output>أشكال</output>
+        </text>
+        <text>
+            <source>There are currently no forms.</source>
+            <output>لا يوجد حاليا أي أشكال.</output>
+        </text>
+        <text>
+            <source>There are currently no form submissions.</source>
+            <output>لا يوجد حاليا أي شكل عروض.</output>
+        </text>
+        <text>
+            <source>Method</source>
+            <output>طريقة</output>
+        </text>
+        <text>
+            <source>Use CAPTCHA</source>
+            <output>استخدام CAPTCHA</output>
+        </text>
+        <text>
+            <source>Use CSRF</source>
+            <output>استخدام CSRF</output>
+        </text>
+        <text>
+            <source>Subject</source>
+            <output>موضوع</output>
+        </text>
+        <text>
+            <source>Reply To</source>
+            <output>رد على</output>
+        </text>
+        <text>
+            <source>Action</source>
+            <output>عمل</output>
+        </text>
+        <text>
+            <source>Redirect</source>
+            <output>إعادة توجيه</output>
+        </text>
+        <text>
+            <source>Form Attributes</source>
+            <output>سمات النموذج</output>
+        </text>
+        <text>
+            <source>Submit Value</source>
+            <output>تقديم القيمة</output>
+        </text>
+        <text>
+            <source>Submit Attributes</source>
+            <output>يقدم سمات</output>
+        </text>
+        <text>
+            <source>That form name already exists. The name must be unique.</source>
+            <output>أن اسم النموذج موجود بالفعل. يجب أن يكون اسم فريد.</output>
+        </text>
+        <text>
+            <source>That form does not exist.</source>
+            <output>عدم وجود هذا النموذج.</output>
+        </text>
+        <text>
+            <source>Enter Code</source>
+            <output>الكود</output>
+        </text>
+    </locale>
+</language>

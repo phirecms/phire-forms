@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE language [
+        <!ELEMENT language ANY>
+        <!ELEMENT locale ANY>
+        <!ELEMENT text (source,output)>
+        <!ELEMENT source ANY>
+        <!ELEMENT output ANY>
+        <!ATTLIST language
+                src       CDATA    #REQUIRED
+                output    CDATA    #REQUIRED
+                name      CDATA    #REQUIRED
+                native    CDATA    #REQUIRED
+                >
+        <!ATTLIST locale
+                region    CDATA    #REQUIRED
+                name      CDATA    #REQUIRED
+                native    CDATA    #REQUIRED
+                >
+        ]>
+<language src="en" output="it" name="Italian" native="Italiano">
+    <locale region="IT" name="Italy" native="Italia">
+        <text>
+            <source>Forms</source>
+            <output>Moduli</output>
+        </text>
+        <text>
+            <source>There are currently no forms.</source>
+            <output>Al momento non ci sono forme.</output>
+        </text>
+        <text>
+            <source>There are currently no form submissions.</source>
+            <output>Attualmente non ci sono presentazioni della forma.</output>
+        </text>
+        <text>
+            <source>Method</source>
+            <output>Metodo</output>
+        </text>
+        <text>
+            <source>Use CAPTCHA</source>
+            <output>Utilizzare CAPTCHA</output>
+        </text>
+        <text>
+            <source>Use CSRF</source>
+            <output>Utilizzare CSRF</output>
+        </text>
+        <text>
+            <source>Subject</source>
+            <output>Doggetto</output>
+        </text>
+        <text>
+            <source>Reply To</source>
+            <output>Rispondi a</output>
+        </text>
+        <text>
+            <source>Action</source>
+            <output>Azione</output>
+        </text>
+        <text>
+            <source>Redirect</source>
+            <output>Redirect</output>
+        </text>
+        <text>
+            <source>Form Attributes</source>
+            <output>Attributi Form</output>
+        </text>
+        <text>
+            <source>Submit Value</source>
+            <output>Invia Valore</output>
+        </text>
+        <text>
+            <source>Submit Attributes</source>
+            <output>Invia Attributi</output>
+        </text>
+        <text>
+            <source>That form name already exists. The name must be unique.</source>
+            <output>Esiste già il nome del modulo. Il nome deve essere univoco.</output>
+        </text>
+        <text>
+            <source>That form does not exist.</source>
+            <output>Quella forma non esiste.</output>
+        </text>
+        <text>
+            <source>Enter Code</source>
+            <output>Inserisci il Codice</output>
+        </text>
+    </locale>
+</language>
