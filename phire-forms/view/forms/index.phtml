@@ -1,0 +1,45 @@
+<?php include $phireHeader; ?>
+    <h1 class="forms-header"><?=$title; ?></h1>
+<?php if (count($forms) > 0): ?>
+<?php if ($acl->isAllowed($user->role, 'forms', 'add')): ?>
+    <nav id="sub-nav">
+        <nav><a href="<?=$phireUri; ?>/forms/add">+ Add</a></nav>
+    </nav>
+<?php endif; ?>
+<?php if ($acl->isAllowed($user->role, 'forms', 'remove')): ?>
+    <form id="forms-form" action="<?=$phireUri . '/forms/remove'; ?>" method="post">
+<?php endif; ?>
+        <table class="data-table" cellpadding="0" cellspacing="0" border="0">
+            <tr>
+                <th><a href="<?=$phireUri . '/forms?sort=id';?>">#</a></th>
+                <th><a href="<?=$phireUri . '/forms?sort=name';?>">Name</a></th>
+                <th># of Fields</th>
+                <th>Submissions</th>
+                <th class="text-center"><?php if ($acl->isAllowed($user->role, 'forms', 'edit')): ?>Edit<?php else: ?>&nbsp;<?php endif; ?></th>
+                <th class="text-center"><?php if ($acl->isAllowed($user->role, 'forms', 'remove')): ?><input type="checkbox" name="checkall" id="checkall" value="rm_forms" /><?php else: ?>&nbsp;<?php endif; ?></th>
+            </tr>
+<?php $i = 1; ?>
+<?php foreach ($forms as $form): ?>
+            <tr>
+                <td><?=$form->id; ?></td>
+                <td><?=$form->name; ?></td>
+                <td><?=$form->num_of_fields; ?></td>
+                <td><?=$form->num_of_submissions; ?><?=(($form->num_of_submissions > 0) ? ' [ <a class="normal-link" href="' . $phireUri . '/forms/submissions/' . $form->id . '">View</a> ]' : null); ?></td>
+                <td><?php if ($acl->isAllowed($user->role, 'forms', 'edit')): ?><a class="edit-link" href="<?=$phireUri . '/forms/edit/' . $form->id; ?>">Edit</a><?php else: ?>&nbsp;<?php endif; ?></td>
+                <td class="text-center"><?php if ($acl->isAllowed($user->role, 'forms', 'remove')): ?><input type="checkbox" name="rm_forms[]" id="rm_forms<?=$i++; ?>" value="<?=$form->id; ?>" /><?php else: ?>&nbsp;<?php endif; ?></td>
+            </tr>
+<?php endforeach; ?>
+        </table>
+<?php if ($acl->isAllowed($user->role, 'forms', 'remove')): ?>
+        <div id="form-footer"><input type="submit" name="submit" class="process-btn" value="Remove" /></div>
+    </form>
+<?php endif; ?>
+<?php else: ?>
+<?php if ($acl->isAllowed($user->role, 'forms', 'add')): ?>
+    <nav id="sub-nav">
+        <nav><a href="<?=$phireUri; ?>/forms/add">+ Add</a></nav>
+    </nav>
+<?php endif; ?>
+    <p>There are currently no forms.</p>
+<?php endif; ?>
+<?php include $phireFooter; ?>

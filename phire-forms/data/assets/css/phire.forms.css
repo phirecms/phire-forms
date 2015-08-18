@@ -1,0 +1,82 @@
+/**
+ * Forms Module Style Sheet for Phire CMS 2
+ */
+
+#form-form {
+    margin: 10px auto 10px auto;
+    padding: 15px 0 15px 0;
+    width: 100%;
+    min-height: 460px;
+    border-top: solid 1px #ccc;
+}
+
+#form-form > dl:first-child {
+    margin: 0 0 0 20px;
+    padding: 0 0 0 20px;
+    width: 160px;
+    border-left: solid 1px #ccc;
+    float: right;
+    min-height: 525px;
+    height: 100%;
+}
+
+#form-form > dl:first-child > dt {
+    width: 100%;
+}
+
+#form-form > dl:first-child > dt {
+    margin: 0 0 5px 0;
+    border-bottom: dotted 1px #aaa;
+}
+
+#form-form-field-group-1 > dd:first-child {
+    width: 160px;
+}
+
+#form-form-field-group-2 {
+    width: calc(100% - 220px);
+}
+
+#form-form-field-group-2 > dt {
+    width: 98%;
+    padding-left: 4px;
+}
+
+#form-form-field-group-2 > dd {
+    width: 98%;
+    padding-left: 4px;
+    padding-bottom: 10px;
+    margin-bottom: 10px;
+    border-bottom: solid 1px #ccc;
+}
+
+#form-form-field-group-3 {
+    float: left;
+    margin: 10px 20px 10px 0;
+    padding: 10px 20px 10px 0;
+    border-right: solid 1px #ccc;
+}
+
+#form-form-field-group-4 {
+    float: left;
+    margin: 10px 0 10px 0;
+    padding: 10px 0 10px 0;
+}
+
+#form-form-field-group-3 > dt, #form-form-field-group-3 > dd, #form-form-field-group-4 > dt, #form-form-field-group-4 > dd {
+    padding-left: 4px;
+}
+
+.forms-nav-icon {
+    background-image: url(../img/forms-icon-sm.png);
+    background-position: 8px center;
+    background-repeat: no-repeat;
+}
+
+.forms-header {
+    margin: 10px 0 10px 0;
+    padding: 10px 0 10px 40px;
+    background-image: url(../img/forms-icon-lg.png);
+    background-position: left center;
+    background-repeat: no-repeat;
+}

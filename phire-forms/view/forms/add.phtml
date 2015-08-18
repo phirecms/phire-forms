@@ -1,0 +1,10 @@
+<?php include $phireHeader; ?>
+    <h1 class="forms-header"><?=$title; ?></h1>
+    <nav id="sub-nav">
+<?php if ($acl->isAllowed($user->role, 'forms', 'add')): ?>
+        <nav><a href="<?=$phireUri; ?>/forms/add">+ Add</a></nav>
+<?php endif; ?>
+        <nav><a href="<?=$phireUri; ?>/forms">Back</a></nav>
+    </nav>
+<?=$form; ?>
+<?php include $phireFooter; ?>
