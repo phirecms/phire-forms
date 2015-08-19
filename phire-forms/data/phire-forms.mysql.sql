@@ -24,8 +24,8 @@ CREATE TABLE IF NOT EXISTS `[{prefix}]forms` (
   `attributes` varchar(255),
   `submit_value` varchar(255),
   `submit_attributes` varchar(255),
-  `captcha` int(1),
-  `csrf` int(1),
+  `use_captcha` int(1),
+  `use_csrf` int(1),
   `force_ssl` int(1),
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=14001 ;

@@ -42,6 +42,14 @@ return [
                 'permission' => 'index'
             ]
         ],
+        '/forms/submissions/view/:id' => [
+            'controller' => 'Phire\Forms\Controller\IndexController',
+            'action'     => 'viewSubmissions',
+            'acl'        => [
+                'resource'   => 'submissions',
+                'permission' => 'view'
+            ]
+        ],
         '/forms/submissions/export/:id' => [
             'controller' => 'Phire\Forms\Controller\IndexController',
             'action'     => 'export',

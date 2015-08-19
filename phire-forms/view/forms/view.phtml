@@ -1,0 +1,36 @@
+<?php include $phireHeader; ?>
+    <h1 class="forms-header"><?=$title; ?></h1>
+    <nav id="sub-nav">
+        <nav><a href="<?=$phireUri; ?>/forms/submissions/<?=$formId; ?>">Back</a></nav>
+    </nav>
+<?php if (count($fieldValues) > 0): ?>
+        <table class="data-table" cellpadding="0" cellspacing="0" border="0">
+            <tr>
+                <th style="width: 20%"><?=date($config->datetime_format, strtotime($timestamp)); ?></th>
+                <th style="text-align: right;"><?=$ip; ?></th>
+            </tr>
+<?php foreach ($fieldValues as $name => $value): ?>
+            <tr>
+                <td><?=ucwords(str_replace(['_', '-'], [' ', ' '], $name)); ?></td>
+                <td><?php
+if ($fieldTypes[$name] == 'file'):
+    $size = filesize($_SERVER['DOCUMENT_ROOT'] . BASE_PATH. CONTENT_PATH . '/assets/phire-fields/files/' . $value);
+    if ($size >= 1000000):
+        $size = round(($size / 1000000), 2) . ' MB';
+    elseif (($size < 1000000) && ($size >= 1000)):
+        $size = round(($size / 1000), 2) . ' KB';
+    else:
+        $size .= ' B';
+    endif;
+    echo '<a class="normal-link" href="' . BASE_PATH. CONTENT_PATH . '/assets/phire-fields/files/' . $value . '" target="_blank">' . $value . '</a> (' . $size . ')';
+else:
+    echo (is_array($value) ? implode(', ', $value) : $value);
+endif;
+?></td>
+            </tr>
+<?php endforeach; ?>
+        </table>
+<?php else: ?>
+    <p>There are no values for this submission.</p>
+<?php endif; ?>
+<?php include $phireFooter; ?>

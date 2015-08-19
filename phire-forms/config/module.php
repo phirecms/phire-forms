@@ -33,6 +33,11 @@ return [
                 'name'     => 'app.route.pre',
                 'action'   => 'Phire\Forms\Event\Form::bootstrap',
                 'priority' => 1000
+            ],
+            [
+                'name'     => 'app.send',
+                'action'   => 'Phire\Forms\Event\Form::parseTemplate',
+                'priority' => 1000
             ]
         ]
     ]

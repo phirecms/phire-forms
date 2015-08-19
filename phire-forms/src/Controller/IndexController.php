@@ -7,6 +7,7 @@ use Phire\Forms\Form;
 use Phire\Forms\Table;
 use Phire\Controller\AbstractController;
 use Pop\Data\Data;
+use Pop\Paginator\Paginator;
 
 class IndexController extends AbstractController
 {
@@ -21,8 +22,20 @@ class IndexController extends AbstractController
         $this->prepareView('forms/index.phtml');
         $forms = new Model\Form();
 
+        if ($forms->hasPages($this->config->pagination)) {
+            $limit = $this->config->pagination;
+            $pages = new Paginator($forms->getCount(), $limit);
+            $pages->useInput(true);
+        } else {
+            $limit = null;
+            $pages = null;
+        }
+
         $this->view->title = 'Forms';
-        $this->view->forms = $forms->getAll($this->request->getQuery('sort'), $this->application->isRegistered('phire-fields'));
+        $this->view->pages = $pages;
+        $this->view->forms = $forms->getAll(
+            $limit, $this->request->getQuery('page'), $this->request->getQuery('sort'), $this->application->isRegistered('phire-fields')
+        );
 
         $this->send();
     }
@@ -37,7 +50,7 @@ class IndexController extends AbstractController
         $this->prepareView('forms/add.phtml');
         $this->view->title = 'Forms : Add';
 
-        $fields = $this->application->config()['forms']['Phire\Forms\Form\Form'];
+        $fields = $this->application->config()['forms']['Phire\Forms\Form\FormObject'];
 
         $this->view->form = new \Pop\Form\Form($fields);
         $this->view->form->setAttribute('id', 'form-form');
@@ -80,7 +93,7 @@ class IndexController extends AbstractController
         $this->view->title         = 'Forms';
         $this->view->form_name = $form->name;
 
-        $fields = $this->application->config()['forms']['Phire\Forms\Form\Form'];
+        $fields = $this->application->config()['forms']['Phire\Forms\Form\FormObject'];
         $fields[1]['name']['attributes']['onkeyup'] = 'phire.changeTitle(this.value);';
 
         $this->view->form = new \Pop\Form\Form($fields);
@@ -122,19 +135,64 @@ class IndexController extends AbstractController
             $this->redirect(BASE_PATH . APP_URI . '/forms');
         }
 
-        $submission  = new Model\FormSubmission();
+        $submission = new Model\FormSubmission();
+
+        if ($submission->hasPages($id, $this->config->pagination)) {
+            $limit = $this->config->pagination;
+            $pages = new Paginator($submission->getCount($id), $limit);
+            $pages->useInput(true);
+        } else {
+            $limit = null;
+            $pages = null;
+        }
+
         $submissions = $submission->getAll(
-            $id, $this->request->getQuery('sort'), $this->application->isRegistered('phire-fields')
+            $id, $limit, $this->request->getQuery('page'), $this->request->getQuery('sort'), $this->application->isRegistered('phire-fields')
         );
 
         $this->prepareView('forms/submissions.phtml');
 
         $this->view->title       = 'Forms : ' . $form->name . ' : Submissions';
         $this->view->id          = $id;
+        $this->view->pages       = $pages;
         $this->view->fields      = $submissions['fields'];
         $this->view->submissions = $submissions['rows'];
 
         $this->send();
+    }
+
+    /**
+     * View submissions action method
+     *
+     * @param  int $id
+     * @return void
+     */
+    public function viewSubmissions($id)
+    {
+        $submission = new Model\FormSubmission();
+        $submission->getById($id);
+
+        if (!isset($submission->id)) {
+            $this->redirect(BASE_PATH . APP_URI . '/forms');
+        }
+
+        $form = new Model\Form();
+        $form->getById($submission->form_id);
+
+        $this->prepareView('forms/view.phtml');
+
+        $submissionValues = $submission->getValues();
+
+        $this->view->title       = 'Forms : ' . $form->name . ' : Submissions : ' . $submission->id;
+        $this->view->id          = $submission->id;
+        $this->view->formId      = $form->id;
+        $this->view->timestamp   = $submission->timestamp;
+        $this->view->ip          = $submission->ip_address;
+        $this->view->fieldTypes  = $submissionValues['fields'];
+        $this->view->fieldValues = $submissionValues['values'];
+
+        $this->send();
+
     }
 
     /**
@@ -154,20 +212,27 @@ class IndexController extends AbstractController
 
         $submission  = new Model\FormSubmission();
         $submissions = $submission->getAll(
-            $id, $this->request->getQuery('sort'), $this->application->isRegistered('phire-fields')
+            $id, null, null, $this->request->getQuery('sort'), $this->application->isRegistered('phire-fields')
         );
 
         $data = [];
+
         foreach ($submissions['rows'] as $row) {
-            $r = (array)$row;
-            $ip = $r['ip_address'];
-            $ts = $r['timestamp'];
-            unset($r['ip_address']);
-            unset($r['timestamp']);
-            unset($r['form_id']);
-            $r['ip_address'] = $ip;
-            $r['timestamp']  = $ts;
-            $data[] = $r;
+            $d = ['id' => $row->id];
+            foreach($submissions['fields'] as $name => $type) {
+                $r  = (array)$row;
+                unset($r['ip_address']);
+                unset($r['timestamp']);
+                unset($r['form_id']);
+                if (isset($r[$name])) {
+                    $d[$name] = (is_array($r[$name])) ? implode(', ', $r[$name]) : $r[$name];
+                } else {
+                    $d[$name] = '';
+                }
+            }
+            $d['ip_address'] = $row->ip_address;
+            $d['timestamp']  = $row->timestamp;
+            $data[] = $d;
         }
 
         $data = new Data($data);

@@ -1,6 +1,9 @@
 <?php include $phireHeader; ?>
-    <h1 class="submissions-header"><?=$title; ?></h1>
+    <h1 class="forms-header"><?=$title; ?></h1>
 <?php if (count($submissions) > 0): ?>
+<?php if (null !== $pages): ?>
+    <div class="page-links"><?=$pages; ?></div>
+<?php endif; ?>
     <nav id="sub-nav">
 <?php if ($acl->isAllowed($user->role, 'submissions', 'export')): ?>
         <nav><a href="<?=$phireUri; ?>/forms/submissions/export/<?=$id; ?>">Export</a></nav>
@@ -12,23 +15,47 @@
 <?php endif; ?>
         <table class="data-table" cellpadding="0" cellspacing="0" border="0">
             <tr>
-                <th><a href="<?=$phireUri . '/forms/submissions?sort=id';?>">#</a></th>
-<?php foreach ($fields as $field): ?>
-                <th><?=ucwords(str_replace(['_', '-'], [' ', ' '], $field)); ?></th>
+                <th><a href="<?=$phireUri . '/forms/submissions/' . $id . '?sort=id';?>">#</a></th>
+<?php foreach ($fields as $name => $type): ?>
+                <th><?=ucwords(str_replace(['_', '-'], [' ', ' '], $name)); ?></th>
 <?php endforeach; ?>
-                <th><a href="<?=$phireUri . '/forms/submissions?sort=timestamp';?>">Timestamp</a></th>
-                <th><a href="<?=$phireUri . '/forms/submissions?sort=ip_address';?>">IP</a></th>
+                <th><a href="<?=$phireUri . '/forms/submissions/' . $id . '?sort=timestamp';?>">Timestamp</a></th>
+                <th><a href="<?=$phireUri . '/forms/submissions/' . $id . '?sort=ip_address';?>">IP</a></th>
+                <th class="text-center"><?php if ($acl->isAllowed($user->role, 'submissions', 'view')): ?>View<?php else: ?>&nbsp;<?php endif; ?></th>
                 <th class="text-center"><?php if ($acl->isAllowed($user->role, 'submissions', 'process')): ?><input type="checkbox" name="checkall" id="checkall" value="rm_submissions" /><?php else: ?>&nbsp;<?php endif; ?></th>
             </tr>
 <?php $i = 1; ?>
 <?php foreach ($submissions as $submission): ?>
             <tr>
                 <td><?=$submission->id; ?></td>
-<?php foreach ($fields as $field): ?>
-                <td><?=$submission[$field]; ?></td>
+<?php foreach ($fields as $name => $type): ?>
+                <td><?php
+if (isset($submission[$name])):
+    if ($type == 'file'):
+        $size = filesize($_SERVER['DOCUMENT_ROOT'] . BASE_PATH. CONTENT_PATH . '/assets/phire-fields/files/' . $submission[$name]);
+        if ($size >= 1000000):
+            $size = round(($size / 1000000), 2) . ' MB';
+        elseif (($size < 1000000) && ($size >= 1000)):
+            $size = round(($size / 1000), 2) . ' KB';
+        else:
+            $size .= ' B';
+        endif;
+        $fv   = '<a class="normal-link" href="' . BASE_PATH. CONTENT_PATH . '/assets/phire-fields/files/' . $submission[$name] . '" target="_blank">' . $submission[$name] . '</a> (' . $size . ')';
+    else:
+        $fv = (is_array($submission[$name]) ? implode(', ', $submission[$name]) : $submission[$name]);
+        if (strlen($fv) > 60):
+            $fv = substr($fv, 0, 60) . '...';
+        endif;
+    endif;
+    echo $fv;
+else:
+    echo '&nbsp;';
+endif;
+?></td>
 <?php endforeach; ?>
                 <td><?=date($config->datetime_format, strtotime($submission->timestamp)); ?></td>
                 <td><?=$submission->ip_address; ?></td>
+                <td class="text-center"><?php if ($acl->isAllowed($user->role, 'submissions', 'view')): ?>[ <a class="normal-link" href="<?=$phireUri; ?>/forms/submissions/view/<?=$submission->id; ?>">View</a> ]<?php else: ?>&nbsp;<?php endif; ?></td>
                 <td class="text-center"><?php if ($acl->isAllowed($user->role, 'submissions', 'process')): ?><input type="checkbox" name="rm_submissions[]" id="rm_submissions<?=$i++; ?>" value="<?=$submission->id; ?>" /><?php else: ?>&nbsp;<?php endif; ?></td>
             </tr>
 <?php endforeach; ?>

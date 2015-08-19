@@ -1,7 +1,7 @@
 <?php
 
 return [
-    'Phire\Forms\Form\Form' => [
+    'Phire\Forms\Form\FormObject' => [
         [
             'submit' => [
                 'type'       => 'submit',
@@ -19,7 +19,7 @@ return [
                 ],
                 'marked' => '1'
             ],
-            'captcha' => [
+            'use_captcha' => [
                 'type'  => 'radio',
                 'label' => 'Use CAPTCHA',
                 'value' => [
@@ -28,7 +28,7 @@ return [
                 ],
                 'marked' => '0'
             ],
-            'csrf' => [
+            'use_csrf' => [
                 'type'  => 'radio',
                 'label' => 'Use CSRF',
                 'value' => [

@@ -11,14 +11,29 @@ class Form extends AbstractModel
     /**
      * Get all forms
      *
+     * @param  int     $limit
+     * @param  int     $page
      * @param  string  $sort
      * @param  boolean $fields
      * @return array
      */
-    public function getAll($sort = null, $fields = false)
+    public function getAll($limit = null, $page = null, $sort = null, $fields = false)
     {
-        $order = (null !== $sort) ? $this->getSortOrder($sort) : 'id ASC';
-        $rows = Table\Forms::findAll(null, ['order' => $order])->rows();
+        $order = (null !== $sort) ? $this->getSortOrder($sort, $page) : 'id ASC';
+
+        if (null !== $limit) {
+            $page = ((null !== $page) && ((int)$page > 1)) ?
+                ($page * $limit) - $limit : null;
+
+            $rows = Table\Forms::findAll(null, [
+                'offset' => $page,
+                'limit'  => $limit,
+                'order'  => $order
+            ])->rows();
+        } else {
+            $rows = Table\Forms::findAll(null, ['order' => $order])->rows();
+        }
+
         foreach ($rows as $i => $row) {
             $fieldCount = [];
             if ($fields) {
@@ -77,8 +92,8 @@ class Form extends AbstractModel
             'attributes'        => (!empty($fields['attributes']) ? $fields['attributes'] : null),
             'submit_value'      => (!empty($fields['submit_value']) ? $fields['submit_value'] : null),
             'submit_attributes' => (!empty($fields['submit_attributes']) ? $fields['submit_attributes'] : null),
-            'captcha'           => (!empty($fields['captcha']) ? (int)$fields['captcha'] : null),
-            'csrf'              => (!empty($fields['csrf']) ? (int)$fields['csrf'] : null),
+            'use_captcha'       => (!empty($fields['use_captcha']) ? (int)$fields['use_captcha'] : null),
+            'use_csrf'          => (!empty($fields['use_csrf']) ? (int)$fields['use_csrf'] : null),
             'force_ssl'         => (!empty($fields['force_ssl']) ? (int)$fields['force_ssl'] : null)
         ]);
         $form->save();
@@ -106,8 +121,8 @@ class Form extends AbstractModel
             $form->attributes        = (!empty($fields['attributes']) ? $fields['attributes'] : null);
             $form->submit_value      = (!empty($fields['submit_value']) ? $fields['submit_value'] : null);
             $form->submit_attributes = (!empty($fields['submit_attributes']) ? $fields['submit_attributes'] : null);
-            $form->captcha           = (!empty($fields['captcha']) ? (int)$fields['captcha'] : null);
-            $form->csrf              = (!empty($fields['csrf']) ? (int)$fields['csrf'] : null);
+            $form->use_captcha       = (!empty($fields['use_captcha']) ? (int)$fields['use_captcha'] : null);
+            $form->use_csrf          = (!empty($fields['use_csrf']) ? (int)$fields['use_csrf'] : null);
             $form->force_ssl         = (!empty($fields['force_ssl']) ? (int)$fields['force_ssl'] : null);
             $form->save();
 

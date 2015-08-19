@@ -28,10 +28,11 @@ class Form extends \Pop\Form\Form
      * Constructor method to instantiate the form object
      *
      * @param  mixed $id
+     * @param  array $captchaConfig
      * @throws \Pop\Form\Exception
      * @return self
      */
-    public function __construct($id)
+    public function __construct($id, $captchaConfig = [])
     {
         $form = (is_numeric($id)) ? Table\Forms::findById($id) : Table\Forms::findBy(['name' => $id]);
 
@@ -43,9 +44,8 @@ class Form extends \Pop\Form\Form
             throw new \Pop\Form\Exception('The phire-fields module is not installed or active.');
         }
 
-        $fieldsConfig = [];
-        $action       = (!empty($form->action)) ? $form->action : null;
-
+        $action           = (!empty($form->action)) ? $form->action : null;
+        $fieldGroups      = [];
         $submitAttributes = [];
         $formAttributes   = [];
 
@@ -76,42 +76,71 @@ class Form extends \Pop\Form\Form
         $fields = \Phire\Fields\Table\Fields::execute((string)$sql, ['models' => $value]);
 
         foreach ($fields->rows() as $field) {
+            if (null !== $field->group_id) {
+                $fieldGroups[$field->group_id] = [];
+            }
+        }
+
+        $fieldGroups['no-group']   = [];
+        $fieldGroups['last-group'] = [];
+
+        foreach ($fields->rows() as $field) {
             $field->validators = unserialize($field->validators);
             $field->models     = unserialize($field->models);
-            foreach ($field->models as $model) {
-                if ((null === $model['type_value']) || ($form->id == $model['type_value'])) {
-                    $fieldsConfig['field_' . $field->id] = \Phire\Fields\Event\Field::createFieldConfig($field);
-                    break;
+            if (null !== $field->group_id) {
+                foreach ($field->models as $model) {
+                    if ((null === $model['type_value']) || ($form->id == $model['type_value'])) {
+                        $fieldGroups[$field->group_id]['field_' . $field->id] = \Phire\Fields\Event\Field::createFieldConfig($field);
+                        break;
+                    }
+                }
+            } else if (null === $field->group_id) {
+                foreach ($field->models as $model) {
+                    if ((null === $model['type_value']) || ($form->id == $model['type_value'])) {
+                        $fieldGroups['no-group']['field_' . $field->id] = \Phire\Fields\Event\Field::createFieldConfig($field);
+                        break;
+                    }
                 }
             }
         }
 
-        if ($form->csrf) {
-            $fieldsConfig['csrf'] = [
+        if ($form->use_csrf) {
+            $fieldGroups['last-group']['csrf'] = [
                 'type' => 'csrf'
             ];
         }
 
-        if ($form->captcha) {
-            $fieldsConfig['captcha'] = [
-                'type'  => 'captcha',
-                'label' => 'Please Solve: ',
-            ];
+        if ($form->use_captcha) {
+            if (class_exists('Phire\Captcha\Model\Captcha')) {
+                $captcha = new \Phire\Captcha\Model\Captcha($captchaConfig);
+                $captcha->createToken();
+
+                $fieldGroups['last-group']['captcha'] = [
+                    'type' => 'captcha',
+                    'label' => 'Enter Code',
+                    'token' => $captcha->token
+                ];
+            } else {
+                $fieldGroups['last-group']['captcha'] = [
+                    'type' => 'captcha',
+                    'label' => 'Please Solve: ',
+                ];
+            }
         }
 
-        $fieldsConfig['id'] = [
+        $fieldGroups['last-group']['id'] = [
             'type'  => 'hidden',
             'value' => $form->id
         ];
 
-        $fieldsConfig['submit'] = [
+        $fieldGroups['last-group']['submit'] = [
             'type'       => 'submit',
             'label'      => '&nbsp;',
             'value'      => (!empty($form->submit_value) ? $form->submit_value : 'SUBMIT'),
             'attributes' => $submitAttributes
         ];
 
-        parent::__construct($fieldsConfig, $action, $form->method);
+        parent::__construct($fieldGroups, $action, $form->method);
 
         foreach ($formAttributes as $attrib => $value) {
             $this->setAttribute($attrib, $value);
@@ -140,23 +169,20 @@ class Form extends \Pop\Form\Form
         unset($fields['id']);
         unset($fields['submit']);
 
-        /*
         $files = [];
+
         if ($_FILES) {
             foreach ($_FILES as $key => $value) {
                 if (isset($value['tmp_name']) && !empty($value['tmp_name'])) {
-                    $filename = Upload::checkDupe($value['name'], __DIR__ . '/../../../data/files');
+                    $upload       = new Upload(__DIR__ . '/../../../../assets/phire-fields/files');
+                    $filename     = $upload->checkFilename($value['name'], __DIR__ . '/../../../../assets/phire-fields/files');
                     $fields[$key] = $filename;
-                    Upload::upload(
-                        $value['tmp_name'], __DIR__ . '/../../../data/files/' . $filename,
-                        $config->media_max_filesize, $config->media_allowed_types
-                    );
-                    $files[] = $filename;
+                    $files[]      = $filename;
+                    $upload->upload($value);
                     unset($_FILES[$key]);
                 }
             }
         }
-        */
 
         $fv     = new \Phire\Fields\Model\FieldValue();
         $values = $fv->save($fields, $submission->id);
@@ -185,8 +211,7 @@ class Form extends \Pop\Form\Form
             $subject = $form->name . ' : ' . $domain;
 
             // Set the recipient
-            $rcpt = ['email' => $form->to];
-
+            $rcpt    = ['email' => $form->to];
             $message = '';
 
             foreach ($values as $key => $value) {
@@ -211,13 +236,13 @@ class Form extends \Pop\Form\Form
 
             $mail->setText($message);
 
-            /*
             if (count($files) > 0) {
                 foreach ($files as $file) {
-                    $mail->attachFile(__DIR__ . '/../../../data/files/' . $file);
+                    if (file_exists(__DIR__ . '/../../../../assets/phire-fields/files/' . $file)) {
+                        $mail->attachFile(__DIR__ . '/../../../../assets/phire-fields/files/' . $file);
+                    }
                 }
             }
-            */
 
             $mail->send();
         }
@@ -245,8 +270,8 @@ class Form extends \Pop\Form\Form
      */
     public function isSubmitted()
     {
-        return (($_SERVER['REQUEST_URI'] == $this->action) && ((($this->method == 'get') &&
-                    isset($_GET['submit'])) || (($this->method == 'post') && ($_POST))));
+        return (($_SERVER['REQUEST_URI'] == $this->attributes['action']) && ((($this->attributes['method'] == 'get') &&
+            isset($_GET['submit'])) || (($this->attributes['method'] == 'post') && ($_POST))));
     }
 
     /**
