@@ -15,4 +15,16 @@ jax(document).ready(function(){
             return jax('#forms-form').checkValidate('checkbox', true);
         });
     }
+    if (jax('#submissions-form')[0] != undefined) {
+        jax('#checkall').click(function(){
+            if (this.checked) {
+                jax('#submissions-form').checkAll(this.value);
+            } else {
+                jax('#submissions-form').uncheckAll(this.value);
+            }
+        });
+        jax('#submissions-form').submit(function(){
+            return jax('#submissions-form').checkValidate('checkbox', true);
+        });
+    }
 });

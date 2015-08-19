@@ -6,5 +6,10 @@ return [
         'add',
         'edit',
         'remove'
+    ],
+    'submissions' => [
+        'index',
+        'export',
+        'process'
     ]
 ];

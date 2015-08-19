@@ -33,6 +33,30 @@ return [
                 'resource'   => 'forms',
                 'permission' => 'remove'
             ]
+        ],
+        '/forms/submissions/:id' => [
+            'controller' => 'Phire\Forms\Controller\IndexController',
+            'action'     => 'submissions',
+            'acl'        => [
+                'resource'   => 'submissions',
+                'permission' => 'index'
+            ]
+        ],
+        '/forms/submissions/export/:id' => [
+            'controller' => 'Phire\Forms\Controller\IndexController',
+            'action'     => 'export',
+            'acl'        => [
+                'resource'   => 'submissions',
+                'permission' => 'export'
+            ]
+        ],
+        '/forms/submissions/process[/]' => [
+            'controller' => 'Phire\Forms\Controller\IndexController',
+            'action'     => 'process',
+            'acl'        => [
+                'resource'   => 'submissions',
+                'permission' => 'process'
+            ]
         ]
     ]
 ];

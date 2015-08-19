@@ -2,40 +2,282 @@
 
 namespace Phire\Forms\Form;
 
-use Pop\Form\Form as F;
-use Pop\Validator;
+use Pop\File\Upload;
+use Pop\Mail\Mail;
 use Phire\Forms\Table;
 
-class Form extends F
+class Form extends \Pop\Form\Form
 {
 
     /**
-     * Constructor
-     *
-     * Instantiate the form object
-     *
-     * @param  array  $fields
-     * @param  string $action
-     * @param  string $method
-     * @return Form
+     * Redirect flag
      */
-    public function __construct(array $fields, $action = null, $method = 'post')
+    protected $redirect = false;
+
+    /**
+     * Redirect URL
+     */
+    protected $redirectUrl = null;
+
+    /**
+     * Redirect message
+     */
+    protected $message = null;
+
+    /**
+     * Constructor method to instantiate the form object
+     *
+     * @param  mixed $id
+     * @throws \Pop\Form\Exception
+     * @return self
+     */
+    public function __construct($id)
     {
-        parent::__construct($fields, $action, $method);
-        $this->setAttribute('id', 'form-form');
-        $this->setIndent('    ');
+        $form = (is_numeric($id)) ? Table\Forms::findById($id) : Table\Forms::findBy(['name' => $id]);
+
+        if (!isset($form->id)) {
+            throw new \Pop\Form\Exception('That form does not exist.');
+        }
+
+        if (!class_exists('Phire\Fields\Model\Field')) {
+            throw new \Pop\Form\Exception('The phire-fields module is not installed or active.');
+        }
+
+        $fieldsConfig = [];
+        $action       = (!empty($form->action)) ? $form->action : null;
+
+        $submitAttributes = [];
+        $formAttributes   = [];
+
+        if (!empty($form->submit_attributes)) {
+            $attribs = explode('" ', $form->submit_attributes);
+            foreach ($attribs as $attrib) {
+                $attAry = explode('=', $attrib);
+                $att    = trim($attAry[0]);
+                $val    = str_replace('"', '', trim($attAry[1]));
+                $submitAttributes[$att] = $val;
+            }
+        }
+
+        if (!empty($form->attributes)) {
+            $attribs = explode('" ', $form->attributes);
+            foreach ($attribs as $attrib) {
+                $attAry = explode('=', $attrib);
+                $att    = trim($attAry[0]);
+                $val    = str_replace('"', '', trim($attAry[1]));
+                $formAttributes[$att] = $val;
+            }
+        }
+
+        $sql = \Phire\Fields\Table\Fields::sql();
+        $sql->select()->where('models LIKE :models');
+
+        $value  = ($sql->getDbType() == \Pop\Db\Sql::SQLITE) ? '%Phire\\Forms\\Model\\Form%' : '%Phire\\\\Forms\\\\Model\\\\Form%';
+        $fields = \Phire\Fields\Table\Fields::execute((string)$sql, ['models' => $value]);
+
+        foreach ($fields->rows() as $field) {
+            $field->validators = unserialize($field->validators);
+            $field->models     = unserialize($field->models);
+            foreach ($field->models as $model) {
+                if ((null === $model['type_value']) || ($form->id == $model['type_value'])) {
+                    $fieldsConfig['field_' . $field->id] = \Phire\Fields\Event\Field::createFieldConfig($field);
+                    break;
+                }
+            }
+        }
+
+        if ($form->csrf) {
+            $fieldsConfig['csrf'] = [
+                'type' => 'csrf'
+            ];
+        }
+
+        if ($form->captcha) {
+            $fieldsConfig['captcha'] = [
+                'type'  => 'captcha',
+                'label' => 'Please Solve: ',
+            ];
+        }
+
+        $fieldsConfig['id'] = [
+            'type'  => 'hidden',
+            'value' => $form->id
+        ];
+
+        $fieldsConfig['submit'] = [
+            'type'       => 'submit',
+            'label'      => '&nbsp;',
+            'value'      => (!empty($form->submit_value) ? $form->submit_value : 'SUBMIT'),
+            'attributes' => $submitAttributes
+        ];
+
+        parent::__construct($fieldsConfig, $action, $form->method);
+
+        foreach ($formAttributes as $attrib => $value) {
+            $this->setAttribute($attrib, $value);
+        }
     }
 
     /**
-     * Set the field values
+     * Method to process the form
      *
-     * @param  array $values
-     * @return Form
+     * @return self
      */
-    public function setFieldValues(array $values = null)
+    public function process()
     {
-        parent::setFieldValues($values);
+        $fields = $this->getFields();
+
+        $submission = new Table\FormSubmissions([
+            'form_id'    => $this->id,
+            'timestamp'  => date('Y-m-d H:i:s'),
+            'ip_address' => $_SERVER['REMOTE_ADDR']
+        ]);
+
+        $submission->save();
+
+        unset($fields['csrf']);
+        unset($fields['captcha']);
+        unset($fields['id']);
+        unset($fields['submit']);
+
+        /*
+        $files = [];
+        if ($_FILES) {
+            foreach ($_FILES as $key => $value) {
+                if (isset($value['tmp_name']) && !empty($value['tmp_name'])) {
+                    $filename = Upload::checkDupe($value['name'], __DIR__ . '/../../../data/files');
+                    $fields[$key] = $filename;
+                    Upload::upload(
+                        $value['tmp_name'], __DIR__ . '/../../../data/files/' . $filename,
+                        $config->media_max_filesize, $config->media_allowed_types
+                    );
+                    $files[] = $filename;
+                    unset($_FILES[$key]);
+                }
+            }
+        }
+        */
+
+        $fv     = new \Phire\Fields\Model\FieldValue();
+        $values = $fv->save($fields, $submission->id);
+
+        $form = Table\Forms::findById($this->id);
+
+        // If the form action is set
+        if (!empty($form->action)) {
+            $scheme = ($form->force_ssl) ? 'https://' : 'http://';
+            $action = (substr($form->action, 0, 4) == 'http') ? $form->action : $scheme . $_SERVER['HTTP_HOST'] . BASE_PATH . $form->action;
+            $options = [
+                CURLOPT_POST           => true,
+                CURLOPT_POSTFIELDS     => $values,
+                CURLOPT_HEADER         => false,
+                CURLOPT_RETURNTRANSFER => true
+            ];
+
+            $curl = new \Pop\Http\Client\Curl($action, $options);
+            $curl->send();
+            unset($curl);
+        }
+
+        // Send the submission if the form "to" field is set
+        if (!empty($form->to)) {
+            $domain  = str_replace('www.', '', $_SERVER['HTTP_HOST']);
+            $subject = $form->name . ' : ' . $domain;
+
+            // Set the recipient
+            $rcpt = ['email' => $form->to];
+
+            $message = '';
+
+            foreach ($values as $key => $value) {
+                $message .= ucwords(str_replace('_', ' ', $key)) . ': ' . (is_array($value) ? implode(', ', $value) : $value) . PHP_EOL;
+            }
+
+            // Send form submission
+            $mail = new Mail($subject, $rcpt);
+
+            if (!empty($form->from)) {
+                if (!empty($form->reply_to)) {
+                    $mail->from($form->from, null, false)
+                         ->replyTo($form->reply_to, null, false);
+                } else {
+                    $mail->from($form->from);
+                }
+            } else if (!empty($form->reply_to)) {
+                $mail->replyTo($form->from);
+            } else {
+                $mail->from('noreply@' . $domain);
+            }
+
+            $mail->setText($message);
+
+            /*
+            if (count($files) > 0) {
+                foreach ($files as $file) {
+                    $mail->attachFile(__DIR__ . '/../../../data/files/' . $file);
+                }
+            }
+            */
+
+            $mail->send();
+        }
+
+        $this->clear();
+
+        if (!empty($form->redirect)) {
+            if ((substr($form->redirect, 0, 4) == 'http') || (substr($form->redirect, 0, 1) == '/')) {
+                $this->redirect = true;
+                $redirect       = (substr($form->redirect, 0, 4) == 'http') ? $form->redirect : BASE_PATH . $form->redirect;
+                header('Location: ' . $redirect);
+                exit();
+            } else {
+                $this->message = $form->redirect;
+            }
+        }
+
         return $this;
     }
+
+    /**
+     * Method to get the whether the form was submitted
+     *
+     * @return boolean
+     */
+    public function isSubmitted()
+    {
+        return (($_SERVER['REQUEST_URI'] == $this->action) && ((($this->method == 'get') &&
+                    isset($_GET['submit'])) || (($this->method == 'post') && ($_POST))));
+    }
+
+    /**
+     * Method to get the whether it's a redirect
+     *
+     * @return boolean
+     */
+    public function isRedirect()
+    {
+        return $this->redirect;
+    }
+
+    /**
+     * Method to get the redirect URL
+     *
+     * @return string
+     */
+    public function getRedirectUrl()
+    {
+        return $this->redirectUrl;
+    }
+
+    /**
+     * Method to get the redirect message
+     *
+     * @return string
+     */
+    public function getMessage()
+    {
+        return $this->message;
+    }
+
 
 }

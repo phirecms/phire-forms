@@ -1,43 +1,46 @@
 <?php include $phireHeader; ?>
-    <h1 class="forms-header"><?=$title; ?></h1>
-<?php if (count($forms) > 0): ?>
-<?php if ($acl->isAllowed($user->role, 'forms', 'add')): ?>
+    <h1 class="submissions-header"><?=$title; ?></h1>
+<?php if (count($submissions) > 0): ?>
     <nav id="sub-nav">
-        <nav><a href="<?=$phireUri; ?>/forms/add">+ Add</a></nav>
-    </nav>
+<?php if ($acl->isAllowed($user->role, 'submissions', 'export')): ?>
+        <nav><a href="<?=$phireUri; ?>/forms/submissions/export/<?=$id; ?>">Export</a></nav>
 <?php endif; ?>
-<?php if ($acl->isAllowed($user->role, 'forms', 'remove')): ?>
-    <form id="forms-form" action="<?=$phireUri . '/forms/remove'; ?>" method="post">
+        <nav><a href="<?=$phireUri; ?>/forms">Back</a></nav>
+    </nav>
+<?php if ($acl->isAllowed($user->role, 'submissions', 'process')): ?>
+    <form id="submissions-form" action="<?=$phireUri . '/forms/submissions/process'; ?>" method="post">
 <?php endif; ?>
         <table class="data-table" cellpadding="0" cellspacing="0" border="0">
             <tr>
-                <th><a href="<?=$phireUri . '/forms?sort=id';?>">#</a></th>
-                <th><a href="<?=$phireUri . '/forms?sort=name';?>">Name</a></th>
-                <th>Device</th>
-                <th class="text-center"><?php if ($acl->isAllowed($user->role, 'forms', 'copy')): ?>Copy<?php else: ?>&nbsp;<?php endif; ?></th>
-                <th class="text-center"><?php if ($acl->isAllowed($user->role, 'forms', 'edit')): ?>Edit<?php else: ?>&nbsp;<?php endif; ?></th>
-                <th class="text-center"><?php if ($acl->isAllowed($user->role, 'forms', 'remove')): ?><input type="checkbox" name="checkall" id="checkall" value="rm_forms" /><?php else: ?>&nbsp;<?php endif; ?></th>
+                <th><a href="<?=$phireUri . '/forms/submissions?sort=id';?>">#</a></th>
+<?php foreach ($fields as $field): ?>
+                <th><?=ucwords(str_replace(['_', '-'], [' ', ' '], $field)); ?></th>
+<?php endforeach; ?>
+                <th><a href="<?=$phireUri . '/forms/submissions?sort=timestamp';?>">Timestamp</a></th>
+                <th><a href="<?=$phireUri . '/forms/submissions?sort=ip_address';?>">IP</a></th>
+                <th class="text-center"><?php if ($acl->isAllowed($user->role, 'submissions', 'process')): ?><input type="checkbox" name="checkall" id="checkall" value="rm_submissions" /><?php else: ?>&nbsp;<?php endif; ?></th>
             </tr>
 <?php $i = 1; ?>
-<?php foreach ($forms as $form): ?>
+<?php foreach ($submissions as $submission): ?>
             <tr>
-                <td><?=$form->id; ?></td>
-                <td><?=$form->name; ?></td>
-                <td><?php if ($acl->isAllowed($user->role, 'forms', 'edit')): ?><a class="edit-link" href="<?=$phireUri . '/forms/edit/' . $form->id; ?>">Edit</a><?php else: ?>&nbsp;<?php endif; ?></td>
-                <td class="text-center"><?php if ($acl->isAllowed($user->role, 'forms', 'remove')): ?><input type="checkbox" name="rm_forms[]" id="rm_forms<?=$i++; ?>" value="<?=$form->id; ?>" /><?php else: ?>&nbsp;<?php endif; ?></td>
+                <td><?=$submission->id; ?></td>
+<?php foreach ($fields as $field): ?>
+                <td><?=$submission[$field]; ?></td>
+<?php endforeach; ?>
+                <td><?=date($config->datetime_format, strtotime($submission->timestamp)); ?></td>
+                <td><?=$submission->ip_address; ?></td>
+                <td class="text-center"><?php if ($acl->isAllowed($user->role, 'submissions', 'process')): ?><input type="checkbox" name="rm_submissions[]" id="rm_submissions<?=$i++; ?>" value="<?=$submission->id; ?>" /><?php else: ?>&nbsp;<?php endif; ?></td>
             </tr>
 <?php endforeach; ?>
         </table>
-<?php if ($acl->isAllowed($user->role, 'forms', 'remove')): ?>
-        <div id="form-footer"><input type="submit" name="submit" class="process-btn" value="Remove" /></div>
+<?php if ($acl->isAllowed($user->role, 'submissions', 'process')): ?>
+        <div id="form-footer"><input type="submit" name="submit" class="process-btn" value="Remove" /><input type="hidden" name="id" value="<?=$id; ?>" /></div>
     </form>
 <?php endif; ?>
 <?php else: ?>
-<?php if ($acl->isAllowed($user->role, 'forms', 'add')): ?>
     <nav id="sub-nav">
-        <nav><a href="<?=$phireUri; ?>/forms/add">+ Add</a></nav>
+        <nav><a href="<?=$phireUri; ?>/forms">Back</a></nav>
     </nav>
-<?php endif; ?>
-    <p>There are currently no forms.</p>
+    <p>There are currently no submissions.</p>
 <?php endif; ?>
 <?php include $phireFooter; ?>

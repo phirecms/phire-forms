@@ -20,7 +20,24 @@ class Form extends AbstractModel
         $order = (null !== $sort) ? $this->getSortOrder($sort) : 'id ASC';
         $rows = Table\Forms::findAll(null, ['order' => $order])->rows();
         foreach ($rows as $i => $row) {
-            $rows[$i]->num_of_fields = ($fields) ? 1 : 0;
+            $fieldCount = [];
+            if ($fields) {
+                $flds = \Phire\Fields\Table\Fields::findAll();
+                foreach ($flds->rows() as $f) {
+                    if (!empty($f->models)) {
+                        $models = (unserialize($f->models));
+                        foreach ($models as $model) {
+                            if ($model['model'] == 'Phire\Forms\Model\Form') {
+                                if (((null === $model['type_value']) || ($row->id == $model['type_value'])) &&
+                                    !in_array($row->id, $fieldCount)) {
+                                    $fieldCount[] = $f->id;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            $rows[$i]->num_of_fields      = count($fieldCount);
             $rows[$i]->num_of_submissions = Table\FormSubmissions::findBy(['form_id' => $row->id])->count();
         }
         return $rows;
