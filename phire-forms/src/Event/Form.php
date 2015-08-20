@@ -53,7 +53,7 @@ class Form
     {
         if ($application->isRegistered('phire-templates') &&
             ($controller instanceof \Phire\Content\Controller\IndexController) && ($controller->hasView()) &&
-            ($controller->view()->getTemplate() instanceof \Pop\View\Template\Stream)) {
+            ($controller->view()->isStream())) {
             if (strpos($controller->view()->getTemplate()->getTemplate(), '[{form_') !== false) {
                 // Parse any form placeholders
 
