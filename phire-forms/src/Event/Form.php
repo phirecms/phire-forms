@@ -69,19 +69,23 @@ class Form
 
                 if (count($formIds) > 0) {
                     foreach ($formIds as $id) {
-                        $form = new \Phire\Forms\Form\Form($id);
-                        if ($form->isSubmitted()) {
-                            $values = ($form->getMethod() == 'post') ? $_POST : $_GET;
-                            $form->addFilter('strip_tags');
-                            $form->setFieldValues($values);
-                            if ($form->isValid()) {
-                                $form->process();
-                                $body = str_replace('[{form_' . $id . '}]', $form->getMessage(), $body);
+                        try {
+                            $form = new \Phire\Forms\Form\Form($id);
+                            if ($form->isSubmitted()) {
+                                $values = ($form->getMethod() == 'post') ? $_POST : $_GET;
+                                $form->addFilter('strip_tags');
+                                $form->setFieldValues($values);
+                                if ($form->isValid()) {
+                                    $form->process();
+                                    $body = str_replace('[{form_' . $id . '}]', $form->getMessage(), $body);
+                                } else {
+                                    $body = str_replace('[{form_' . $id . '}]', (string)$form, $body);
+                                }
                             } else {
                                 $body = str_replace('[{form_' . $id . '}]', (string)$form, $body);
                             }
-                        } else {
-                            $body = str_replace('[{form_' . $id . '}]', (string)$form, $body);
+                        } catch (\Exception $e) {
+                            $body = str_replace('[{form_' . $id . '}]', '', $body);
                         }
                     }
                 }
