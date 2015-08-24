@@ -35,7 +35,7 @@ return [
                 'priority' => 1000
             ],
             [
-                'name'     => 'app.send',
+                'name'     => 'app.send.pre',
                 'action'   => 'Phire\Forms\Event\Form::parseTemplate',
                 'priority' => 1000
             ]
