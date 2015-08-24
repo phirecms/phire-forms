@@ -81,8 +81,8 @@ class Form extends \Pop\Form\Form
             }
         }
 
-        $fieldGroups['no-group']   = [];
-        $fieldGroups['last-group'] = [];
+        $fieldGroups[0]   = [];
+        $fieldGroups[-1] = [];
 
         foreach ($fields->rows() as $field) {
             $field->validators = unserialize($field->validators);
@@ -97,7 +97,7 @@ class Form extends \Pop\Form\Form
             } else if (null === $field->group_id) {
                 foreach ($field->models as $model) {
                     if ((null === $model['type_value']) || ($form->id == $model['type_value'])) {
-                        $fieldGroups['no-group']['field_' . $field->id] = \Phire\Fields\Event\Field::createFieldConfig($field);
+                        $fieldGroups[0]['field_' . $field->id] = \Phire\Fields\Event\Field::createFieldConfig($field);
                         break;
                     }
                 }
@@ -105,7 +105,7 @@ class Form extends \Pop\Form\Form
         }
 
         if ($form->use_csrf) {
-            $fieldGroups['last-group']['csrf'] = [
+            $fieldGroups[-1]['csrf'] = [
                 'type' => 'csrf'
             ];
         }
@@ -115,25 +115,25 @@ class Form extends \Pop\Form\Form
                 $captcha = new \Phire\Captcha\Model\Captcha($captchaConfig);
                 $captcha->createToken();
 
-                $fieldGroups['last-group']['captcha'] = [
+                $fieldGroups[-1]['captcha'] = [
                     'type' => 'captcha',
                     'label' => 'Enter Code',
                     'token' => $captcha->token
                 ];
             } else {
-                $fieldGroups['last-group']['captcha'] = [
+                $fieldGroups[-1]['captcha'] = [
                     'type' => 'captcha',
                     'label' => 'Please Solve: ',
                 ];
             }
         }
 
-        $fieldGroups['last-group']['id'] = [
+        $fieldGroups[-1]['id'] = [
             'type'  => 'hidden',
             'value' => $form->id
         ];
 
-        $fieldGroups['last-group']['submit'] = [
+        $fieldGroups[-1]['submit'] = [
             'type'       => 'submit',
             'label'      => '&nbsp;',
             'value'      => (!empty($form->submit_value) ? $form->submit_value : 'SUBMIT'),

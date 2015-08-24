@@ -43,27 +43,26 @@ class Form
     }
 
     /**
-     * Parse form object in a template
+     * Parse form object
      *
      * @param  AbstractController $controller
      * @param  Application        $application
      * @return void
      */
-    public static function parseTemplate(AbstractController $controller, Application $application)
+    public static function parseForms(AbstractController $controller, Application $application)
     {
-        if ($application->isRegistered('phire-templates') &&
-            ($controller instanceof \Phire\Content\Controller\IndexController) && ($controller->hasView()) &&
-            ($controller->view()->isStream())) {
-            if (strpos($controller->view()->getTemplate()->getTemplate(), '[{form_') !== false) {
+        if ($application->isRegistered('phire-content') &&
+            ($controller instanceof \Phire\Content\Controller\IndexController) && ($controller->hasView())) {
+            $body = $controller->response()->getBody();
+            if (strpos($body, '[{form_') !== false) {
                 // Parse any form placeholders
 
-                $template = $controller->view()->getTemplate()->getTemplate();
                 $formIds = [];
                 $forms   = [];
-                preg_match_all('/\[\{form.*\}\]/', $template, $forms);
+                preg_match_all('/\[\{form.*\}\]/', $body, $forms);
                 if (isset($forms[0]) && isset($forms[0][0])) {
                     foreach ($forms[0] as $form) {
-                        $id = substr($form, (strpos($form, 'form_') + 5));
+                        $id        = substr($form, (strpos($form, 'form_') + 5));
                         $formIds[] = str_replace('}]', '', $id);
                     }
                 }
@@ -77,17 +76,17 @@ class Form
                             $form->setFieldValues($values);
                             if ($form->isValid()) {
                                 $form->process();
-                                $template = str_replace('[{form_' . $id . '}]', $form->getMessage(), $template);
+                                $body = str_replace('[{form_' . $id . '}]', $form->getMessage(), $body);
                             } else {
-                                $template = str_replace('[{form_' . $id . '}]', (string)$form, $template);
+                                $body = str_replace('[{form_' . $id . '}]', (string)$form, $body);
                             }
                         } else {
-                            $template = str_replace('[{form_' . $id . '}]', (string)$form, $template);
+                            $body = str_replace('[{form_' . $id . '}]', (string)$form, $body);
                         }
                     }
                 }
 
-                $controller->view()->getTemplate()->setTemplate($template);
+                $controller->response()->setBody($body);
             }
         }
     }
