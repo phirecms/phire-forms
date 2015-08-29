@@ -26,13 +26,13 @@ class FormSubmission extends AbstractModel
             $page = ((null !== $page) && ((int)$page > 1)) ?
                 ($page * $limit) - $limit : null;
 
-            $rows = Table\FormSubmissions::findBy(['form_id' => $id], null, [
+            $rows = Table\FormSubmissions::findBy(['form_id' => $id], [
                 'offset' => $page,
                 'limit'  => $limit,
                 'order'  => $order
             ])->rows();
         } else {
-            $rows = Table\FormSubmissions::findBy(['form_id' => $id], null, ['order' => $order])->rows();
+            $rows = Table\FormSubmissions::findBy(['form_id' => $id], ['order' => $order])->rows();
         }
 
         $fieldNames = [];

@@ -25,13 +25,13 @@ class Form extends AbstractModel
             $page = ((null !== $page) && ((int)$page > 1)) ?
                 ($page * $limit) - $limit : null;
 
-            $rows = Table\Forms::findAll(null, [
+            $rows = Table\Forms::findAll([
                 'offset' => $page,
                 'limit'  => $limit,
                 'order'  => $order
             ])->rows();
         } else {
-            $rows = Table\Forms::findAll(null, ['order' => $order])->rows();
+            $rows = Table\Forms::findAll(['order' => $order])->rows();
         }
 
         foreach ($rows as $i => $row) {
