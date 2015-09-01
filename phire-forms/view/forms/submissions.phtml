@@ -16,9 +16,16 @@
         <table class="data-table" cellpadding="0" cellspacing="0" border="0">
             <tr>
                 <th><a href="<?=$phireUri . '/forms/submissions/' . $id . '?sort=id';?>">#</a></th>
-<?php foreach ($fields as $name => $type): ?>
-                <th><?=ucwords(str_replace(['_', '-'], [' ', ' '], $name)); ?></th>
-<?php endforeach; ?>
+<?php $j = 0;
+foreach ($fields as $name => $type):
+    if ($j < $fieldListLimit):
+?>
+                <th><?=ucwords(str_replace(['_', '-'], [' ', ' '], $name)); ?><?=((($j == ($fieldListLimit - 1)) && (count($fields) > $fieldListLimit)) ? ' <span style="font-weight: normal;">[ ' . count($fields) . ' Fields Total ]</span>' : '');?></th>
+<?php
+    endif;
+    $j++;
+endforeach;
+?>
                 <th><a href="<?=$phireUri . '/forms/submissions/' . $id . '?sort=timestamp';?>">Timestamp</a></th>
                 <th><a href="<?=$phireUri . '/forms/submissions/' . $id . '?sort=ip_address';?>">IP</a></th>
                 <th class="text-center"><?php if ($acl->isAllowed($user->role, 'submissions', 'view')): ?>View<?php else: ?>&nbsp;<?php endif; ?></th>
@@ -28,7 +35,10 @@
 <?php foreach ($submissions as $submission): ?>
             <tr>
                 <td><?=$submission->id; ?></td>
-<?php foreach ($fields as $name => $type): ?>
+<?php $j = 0;
+foreach ($fields as $name => $type):
+    if ($j < $fieldListLimit):
+?>
                 <td><?php
 if (isset($submission[$name])):
     if ($type == 'file'):
@@ -52,7 +62,11 @@ else:
     echo '&nbsp;';
 endif;
 ?></td>
-<?php endforeach; ?>
+<?php
+    endif;
+    $j++;
+endforeach;
+?>
                 <td><?=date($config->datetime_format, strtotime($submission->timestamp)); ?></td>
                 <td><?=$submission->ip_address; ?></td>
                 <td class="text-center"><?php if ($acl->isAllowed($user->role, 'submissions', 'view')): ?>[ <a class="normal-link" href="<?=$phireUri; ?>/forms/submissions/view/<?=$submission->id; ?>">View</a> ]<?php else: ?>&nbsp;<?php endif; ?></td>

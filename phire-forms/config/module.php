@@ -39,6 +39,7 @@ return [
                 'action'   => 'Phire\Forms\Event\Form::parseForms',
                 'priority' => 1000
             ]
-        ]
+        ],
+        'field_list_limit' => 3
     ]
 ];

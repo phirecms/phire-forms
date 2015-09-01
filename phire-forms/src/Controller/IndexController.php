@@ -152,11 +152,12 @@ class IndexController extends AbstractController
 
         $this->prepareView('forms/submissions.phtml');
 
-        $this->view->title       = 'Forms : ' . $form->name . ' : Submissions';
-        $this->view->id          = $id;
-        $this->view->pages       = $pages;
-        $this->view->fields      = $submissions['fields'];
-        $this->view->submissions = $submissions['rows'];
+        $this->view->title          = 'Forms : ' . $form->name . ' : Submissions';
+        $this->view->id             = $id;
+        $this->view->pages          = $pages;
+        $this->view->fieldListLimit = $this->application->module('phire-forms')['field_list_limit'];
+        $this->view->fields         = $submissions['fields'];
+        $this->view->submissions    = $submissions['rows'];
 
         $this->send();
     }
