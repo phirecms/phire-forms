@@ -67,7 +67,7 @@ class IndexController extends AbstractController
                 $form = new Model\Form();
                 $form->save($this->view->form->getFields());
                 $this->view->id = $form->id;
-                $this->sess->setRequestValue('saved', true, 1);
+                $this->sess->setRequestValue('saved', true);
                 $this->redirect(BASE_PATH . APP_URI . '/forms/edit/'. $form->id);
             }
         }
@@ -114,7 +114,7 @@ class IndexController extends AbstractController
 
                 $form->update($this->view->form->getFields());
                 $this->view->id = $form->id;
-                $this->sess->setRequestValue('saved', true, 1);
+                $this->sess->setRequestValue('saved', true);
                 $this->redirect(BASE_PATH . APP_URI . '/forms/edit/'. $form->id);
             }
         }
@@ -254,7 +254,7 @@ class IndexController extends AbstractController
             $form = new Model\Form();
             $form->remove($this->request->getPost());
         }
-        $this->sess->setRequestValue('removed', true, 1);
+        $this->sess->setRequestValue('removed', true);
         $this->redirect(BASE_PATH . APP_URI . '/forms');
     }
 
@@ -270,7 +270,7 @@ class IndexController extends AbstractController
             $submission->process($this->request->getPost());
         }
         if (null !== $this->request->getPost('id')) {
-            $this->sess->setRequestValue('removed', true, 1);
+            $this->sess->setRequestValue('removed', true);
             $this->redirect(BASE_PATH . APP_URI . '/forms/submissions/' . $this->request->getPost('id'));
         } else {
             $this->redirect(BASE_PATH . APP_URI . '/forms');
