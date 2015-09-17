@@ -51,7 +51,9 @@ class Form
      */
     public static function parseForms(AbstractController $controller, Application $application)
     {
-        if ($controller->hasView()) {
+        if ($controller->hasView() &&
+            (($application->isRegistered('phire-content') && ($controller instanceof \Phire\Content\Controller\IndexController)) ||
+             ($application->isRegistered('phire-categories') && ($controller instanceof \Phire\Categories\Controller\IndexController)))) {
             $body = $controller->response()->getBody();
             if (strpos($body, '[{form_') !== false) {
                 // Parse any form placeholders
