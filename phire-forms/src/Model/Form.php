@@ -11,13 +11,13 @@ class Form extends AbstractModel
     /**
      * Get all forms
      *
-     * @param  int     $limit
-     * @param  int     $page
-     * @param  string  $sort
-     * @param  boolean $fields
+     * @param  int                 $limit
+     * @param  int                 $page
+     * @param  string              $sort
+     * @param  \Pop\Module\Manager $modules
      * @return array
      */
-    public function getAll($limit = null, $page = null, $sort = null, $fields = false)
+    public function getAll($limit = null, $page = null, $sort = null, \Pop\Module\Manager $modules = null)
     {
         $order = (null !== $sort) ? $this->getSortOrder($sort, $page) : 'id ASC';
 
@@ -36,8 +36,13 @@ class Form extends AbstractModel
 
         foreach ($rows as $i => $row) {
             $fieldCount = [];
-            if ($fields) {
+            $flds       = null;
+            if ((null !== $modules) && ($modules->isRegistered('phire-fields'))) {
                 $flds = \Phire\Fields\Table\Fields::findAll();
+            } else if ((null !== $modules) && ($modules->isRegistered('phire-fields-plus'))) {
+                $flds = \Phire\FieldsPlus\Table\Fields::findAll();
+            }
+            if (null !== $flds) {
                 foreach ($flds->rows() as $f) {
                     if (!empty($f->models)) {
                         $models = (unserialize($f->models));

@@ -34,7 +34,7 @@ class IndexController extends AbstractController
         $this->view->title = 'Forms';
         $this->view->pages = $pages;
         $this->view->forms = $forms->getAll(
-            $limit, $this->request->getQuery('page'), $this->request->getQuery('sort'), $this->application->isRegistered('phire-fields')
+            $limit, $this->request->getQuery('page'), $this->request->getQuery('sort'), $this->application->modules()
         );
 
         $this->send();
@@ -149,7 +149,7 @@ class IndexController extends AbstractController
         }
 
         $submissions = $submission->getAll(
-            $id, $limit, $this->request->getQuery('page'), $this->request->getQuery('sort'), $this->application->isRegistered('phire-fields')
+            $id, $limit, $this->request->getQuery('page'), $this->request->getQuery('sort'), $this->application->modules()
         );
 
         $this->prepareView('forms/submissions.phtml');
@@ -215,7 +215,7 @@ class IndexController extends AbstractController
 
         $submission  = new Model\FormSubmission();
         $submissions = $submission->getAll(
-            $id, null, null, $this->request->getQuery('sort'), $this->application->isRegistered('phire-fields')
+            $id, null, null, $this->request->getQuery('sort'), $this->application->modules()
         );
 
         $data = [];

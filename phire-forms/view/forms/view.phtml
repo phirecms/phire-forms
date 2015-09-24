@@ -14,7 +14,7 @@
                 <td><?=ucwords(str_replace(['_', '-'], [' ', ' '], $name)); ?></td>
                 <td><?php
 if ($fieldTypes[$name] == 'file'):
-    $size = filesize($_SERVER['DOCUMENT_ROOT'] . BASE_PATH. CONTENT_PATH . '/assets/phire-fields/files/' . $value);
+    $size = filesize($_SERVER['DOCUMENT_ROOT'] . BASE_PATH. CONTENT_PATH . '/assets/phire-fields' . (class_exists('Phire\FieldsPlus\Model\Field') ? '-plus' : '') . '/files/' . $value);
     if ($size >= 1000000):
         $size = round(($size / 1000000), 2) . ' MB';
     elseif (($size < 1000000) && ($size >= 1000)):
@@ -22,7 +22,7 @@ if ($fieldTypes[$name] == 'file'):
     else:
         $size .= ' B';
     endif;
-    echo '<a class="normal-link" href="' . BASE_PATH. CONTENT_PATH . '/assets/phire-fields/files/' . $value . '" target="_blank">' . $value . '</a> (' . $size . ')';
+    echo '<a class="normal-link" href="' . BASE_PATH. CONTENT_PATH . '/assets/phire-fields' . (class_exists('Phire\FieldsPlus\Model\Field') ? '-plus' : '') . '/files/' . $value . '" target="_blank">' . $value . '</a> (' . $size . ')';
 else:
     echo (is_array($value) ? implode(', ', $value) : $value);
 endif;

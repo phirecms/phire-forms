@@ -40,8 +40,8 @@ class Form extends \Pop\Form\Form
             throw new \Pop\Form\Exception('That form does not exist.');
         }
 
-        if (!class_exists('Phire\Fields\Model\Field')) {
-            throw new \Pop\Form\Exception('The phire-fields module is not installed or active.');
+        if (!class_exists('Phire\Fields\Model\Field') && !class_exists('Phire\FieldsPlus\Model\Field')) {
+            throw new \Pop\Form\Exception('Neither the phire-fields or phire-fields-plus modules are installed or active.');
         }
 
         $action           = (!empty($form->action)) ? $form->action : null;
@@ -174,8 +174,13 @@ class Form extends \Pop\Form\Form
         if ($_FILES) {
             foreach ($_FILES as $key => $value) {
                 if (isset($value['tmp_name']) && !empty($value['tmp_name'])) {
-                    $upload       = new Upload(__DIR__ . '/../../../../assets/phire-fields/files');
-                    $filename     = $upload->checkFilename($value['name'], __DIR__ . '/../../../../assets/phire-fields/files');
+                    if (class_exists('Phire\Fields\Model\Field')) {
+                        $upload   = new Upload(__DIR__ . '/../../../../assets/phire-fields/files');
+                        $filename = $upload->checkFilename($value['name'], __DIR__ . '/../../../../assets/phire-fields/files');
+                    } else if (class_exists('Phire\FieldsPlus\Model\Field')) {
+                        $upload   = new Upload(__DIR__ . '/../../../../assets/phire-fields-plus/files');
+                        $filename = $upload->checkFilename($value['name'], __DIR__ . '/../../../../assets/phire-fields-plus/files');
+                    }
                     $fields[$key] = $filename;
                     $files[]      = $filename;
                     $upload->upload($value);
@@ -240,6 +245,8 @@ class Form extends \Pop\Form\Form
                 foreach ($files as $file) {
                     if (file_exists(__DIR__ . '/../../../../assets/phire-fields/files/' . $file)) {
                         $mail->attachFile(__DIR__ . '/../../../../assets/phire-fields/files/' . $file);
+                    } else if (file_exists(__DIR__ . '/../../../../assets/phire-fields-plus/files/' . $file)) {
+                        $mail->attachFile(__DIR__ . '/../../../../assets/phire-fields-plus/files/' . $file);
                     }
                 }
             }
