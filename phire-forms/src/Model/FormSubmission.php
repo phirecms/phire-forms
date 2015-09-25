@@ -54,30 +54,6 @@ class FormSubmission extends AbstractModel
                     $fieldNames[$fv->name] = $fv->type;
                     $rows[$i][$fv->name]   = json_decode($fv->value, true);
                 }
-            } else if ((null !== $modules) && ($modules->isRegistered('phire-fields-plus'))) {
-                $sql = \Phire\FieldsPlus\Table\Fields::sql();
-                $sql->select()->where('models LIKE :models');
-
-                $value  = ($sql->getDbType() == \Pop\Db\Sql::SQLITE) ?
-                    '%' . 'Phire\Forms\Model\Form' . '%' : '%' . addslashes('Phire\Forms\Model\Form') . '%';
-
-                $fields = \Phire\FieldsPlus\Table\Fields::execute((string)$sql, ['models' => $value]);
-                if ($fields->hasRows()) {
-                    foreach ($fields->rows() as $field) {
-                        $fieldNames[$field->name] = $field->type;
-                        $record = new \Pop\Db\Record();
-                        $record->setPrefix(DB_PREFIX)
-                            ->setPrimaryKeys(['id'])
-                            ->setTable('fields_plus_' . $field->name);
-
-                        $record->findRecordsBy(['model_id' => $row->id, 'model' => 'Phire\Forms\Model\Form']);
-                        if ($record->hasRows()) {
-                            foreach ($record->rows() as $rec) {
-                                $rows[$i][$field->name] = $rec->value;
-                            }
-                        }
-                    }
-                }
             }
         }
 

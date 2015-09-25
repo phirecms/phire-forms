@@ -39,8 +39,6 @@ class Form extends AbstractModel
             $flds       = null;
             if ((null !== $modules) && ($modules->isRegistered('phire-fields'))) {
                 $flds = \Phire\Fields\Table\Fields::findAll();
-            } else if ((null !== $modules) && ($modules->isRegistered('phire-fields-plus'))) {
-                $flds = \Phire\FieldsPlus\Table\Fields::findAll();
             }
             if (null !== $flds) {
                 foreach ($flds->rows() as $f) {
