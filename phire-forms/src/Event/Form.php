@@ -57,7 +57,6 @@ class Form
             $body = $controller->response()->getBody();
             if (strpos($body, '[{form_') !== false) {
                 // Parse any form placeholders
-
                 $formIds = [];
                 $forms   = [];
                 preg_match_all('/\[\{form.*\}\]/', $body, $forms);

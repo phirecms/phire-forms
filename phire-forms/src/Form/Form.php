@@ -185,7 +185,7 @@ class Form extends \Pop\Form\Form
         }
 
         $fv     = new \Phire\Fields\Model\FieldValue();
-        $values = $fv->save($fields, $submission->id);
+        $values = $fv->save($fields, $submission->id, 'Phire\Forms\Model\FormSubmission');
 
         $form = Table\Forms::findById($this->id);
 

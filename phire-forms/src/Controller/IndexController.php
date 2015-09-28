@@ -184,7 +184,7 @@ class IndexController extends AbstractController
 
         $this->prepareView('forms/view.phtml');
 
-        $submissionValues = $submission->getValues();
+        $submissionValues = $submission->getValues($this->application->modules());
 
         $this->view->title       = 'Forms : ' . $form->name . ' : Submissions : ' . $submission->id;
         $this->view->id          = $submission->id;

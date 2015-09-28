@@ -39,20 +39,49 @@ class FormSubmission extends AbstractModel
         foreach ($rows as $i => $row) {
             $fieldNames = [];
             if ((null !== $modules) && ($modules->isRegistered('phire-fields'))) {
-                $sql = \Phire\Fields\Table\FieldValues::sql();
-                $sql->select([
-                    'id'       => DB_PREFIX . 'fields.id',
-                    'name'     => DB_PREFIX . 'fields.name',
-                    'type'     => DB_PREFIX . 'fields.type',
-                    'field_id' => DB_PREFIX . 'field_values.field_id',
-                    'model_id' => DB_PREFIX . 'field_values.model_id',
-                    'value'    => DB_PREFIX . 'field_values.value'
-                ])->where('model_id = :model_id');
-                $sql->select()->join(DB_PREFIX . 'fields', [DB_PREFIX . 'fields.id' => DB_PREFIX . 'field_values.field_id']);
-                $fvRows = \Phire\Fields\Table\FieldValues::execute((string)$sql, ['model_id' => $row->id])->rows();
-                foreach ($fvRows as $fv) {
-                    $fieldNames[$fv->name] = $fv->type;
-                    $rows[$i][$fv->name]   = json_decode($fv->value, true);
+                $class = 'Phire\Forms\Model\Form';
+                $sql   = \Phire\Fields\Table\Fields::sql();
+                $sql->select()->where('models LIKE :models');
+                $sql->select()->orderBy('order');
+
+                $value  = ($sql->getDbType() == \Pop\Db\Sql::SQLITE) ? '%' . $class . '%' : '%' . addslashes($class) . '%';
+                $fields = \Phire\Fields\Table\Fields::execute((string)$sql, ['models' => $value]);
+
+                foreach ($fields->rows() as $field) {
+                    if ($field->storage == 'eav') {
+                        $fv = \Phire\Fields\Table\FieldValues::findBy([
+                            'field_id' => $field->id,
+                            'model_id' => $row->id,
+                            'model'    => 'Phire\Forms\Model\FormSubmission'
+                        ]);
+                        foreach ($fv->rows() as $fv) {
+                            $fieldNames[$field->name] = $field->type;
+                            $rows[$i][$field->name]   = json_decode($fv->value, true);
+                        }
+                    } else {
+                        $fv = new \Pop\Db\Record();
+                        $fv->setPrefix(DB_PREFIX)
+                            ->setPrimaryKeys(['id'])
+                            ->setTable('field_' . $field->name);
+
+                        $fv->findRecordsBy([
+                            'model_id' => $row->id,
+                            'model'    => 'Phire\Forms\Model\FormSubmission',
+                            'revision' => 0
+                        ]);
+
+                        $fieldNames[$field->name] = $field->type;
+
+                        if ($fv->count() > 1) {
+                            $rows[$i][$field->name] = [];
+                            foreach ($fv->rows() as $f) {
+
+                                $rows[$i][$field->name][] = $f->value;
+                            }
+                        } else {
+                            $rows[$i][$field->name] = $fv->value;
+                        }
+                    }
                 }
             }
         }
@@ -78,27 +107,59 @@ class FormSubmission extends AbstractModel
     /**
      * Get form submission values
      *
+     * @param  \Pop\Module\Manager $modules
      * @return array
      */
-    public function getValues()
+    public function getValues(\Pop\Module\Manager $modules = null)
     {
         $values     = [];
         $fieldNames = [];
 
-        $sql = \Phire\Fields\Table\FieldValues::sql();
-        $sql->select([
-            'id'       => DB_PREFIX . 'fields.id',
-            'name'     => DB_PREFIX . 'fields.name',
-            'type'     => DB_PREFIX . 'fields.type',
-            'field_id' => DB_PREFIX . 'field_values.field_id',
-            'model_id' => DB_PREFIX . 'field_values.model_id',
-            'value'    => DB_PREFIX . 'field_values.value'
-        ])->where('model_id = :model_id');
-        $sql->select()->join(DB_PREFIX . 'fields', [DB_PREFIX . 'fields.id' => DB_PREFIX . 'field_values.field_id']);
-        $fvRows = \Phire\Fields\Table\FieldValues::execute((string)$sql, ['model_id' => $this->id])->rows();
-        foreach ($fvRows as $fv) {
-            $fieldNames[$fv->name] = $fv->type;
-            $values[$fv->name]     = json_decode($fv->value, true);
+        if ((null !== $modules) && ($modules->isRegistered('phire-fields'))) {
+            $class = 'Phire\Forms\Model\Form';
+            $sql   = \Phire\Fields\Table\Fields::sql();
+            $sql->select()->where('models LIKE :models');
+            $sql->select()->orderBy('order');
+
+            $value  = ($sql->getDbType() == \Pop\Db\Sql::SQLITE) ? '%' . $class . '%' : '%' . addslashes($class) . '%';
+            $fields = \Phire\Fields\Table\Fields::execute((string)$sql, ['models' => $value]);
+
+            foreach ($fields->rows() as $field) {
+                if ($field->storage == 'eav') {
+                    $fv = \Phire\Fields\Table\FieldValues::findBy([
+                        'field_id' => $field->id,
+                        'model_id' => $this->id,
+                        'model'    => 'Phire\Forms\Model\FormSubmission'
+                    ]);
+                    foreach ($fv->rows() as $fv) {
+                        $fieldNames[$field->name] = $field->type;
+                        $values[$field->name]   = json_decode($fv->value, true);
+                    }
+                } else {
+                    $fv = new \Pop\Db\Record();
+                    $fv->setPrefix(DB_PREFIX)
+                        ->setPrimaryKeys(['id'])
+                        ->setTable('field_' . $field->name);
+
+                    $fv->findRecordsBy([
+                        'model_id' => $this->id,
+                        'model'    => 'Phire\Forms\Model\FormSubmission',
+                        'revision' => 0
+                    ]);
+
+                    $fieldNames[$field->name] = $field->type;
+
+                    if ($fv->count() > 1) {
+                        $values[$field->name] = [];
+                        foreach ($fv->rows() as $f) {
+                            $fieldNames[$field->name] = $field->type;
+                            $values[$field->name][]   = $f->value;
+                        }
+                    } else {
+                        $values[$field->name] = $fv->value;
+                    }
+                }
+            }
         }
 
         return ['values' => $values, 'fields' => $fieldNames];
