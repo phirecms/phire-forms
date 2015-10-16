@@ -44,7 +44,6 @@ class Form extends \Pop\Form\Form
             throw new \Pop\Form\Exception('The phire-fields module is not installed or active.');
         }
 
-        $action           = (!empty($form->action)) ? $form->action : null;
         $fieldGroups      = [];
         $submitAttributes = [];
         $formAttributes   = [];
@@ -140,7 +139,7 @@ class Form extends \Pop\Form\Form
             'attributes' => $submitAttributes
         ];
 
-        parent::__construct($fieldGroups, $action, $form->method);
+        parent::__construct($fieldGroups, null, $form->method);
 
         foreach ($formAttributes as $attrib => $value) {
             $this->setAttribute($attrib, $value);
@@ -186,19 +185,27 @@ class Form extends \Pop\Form\Form
 
         $fv     = new \Phire\Fields\Model\FieldValue();
         $values = $fv->save($fields, $submission->id, 'Phire\Forms\Model\FormSubmission');
-
-        $form = Table\Forms::findById($this->id);
+        $form   = Table\Forms::findById($this->id);
 
         // If the form action is set
         if (!empty($form->action)) {
             $scheme = ($form->force_ssl) ? 'https://' : 'http://';
             $action = (substr($form->action, 0, 4) == 'http') ? $form->action : $scheme . $_SERVER['HTTP_HOST'] . BASE_PATH . $form->action;
-            $options = [
-                CURLOPT_POST           => true,
-                CURLOPT_POSTFIELDS     => $values,
-                CURLOPT_HEADER         => false,
-                CURLOPT_RETURNTRANSFER => true
-            ];
+
+            if ($form->method == 'post') {
+                $options = [
+                    CURLOPT_POST           => true,
+                    CURLOPT_POSTFIELDS     => $values,
+                    CURLOPT_HEADER         => false,
+                    CURLOPT_RETURNTRANSFER => true
+                ];
+            } else {
+                $action .= '?' . http_build_query($values);
+                $options = [
+                    CURLOPT_HEADER         => false,
+                    CURLOPT_RETURNTRANSFER => true
+                ];
+            }
 
             $curl = new \Pop\Http\Client\Curl($action, $options);
             $curl->send();
