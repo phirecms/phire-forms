@@ -37,7 +37,6 @@ class FormSubmission extends AbstractModel
 
         $fieldNames = [];
         foreach ($rows as $i => $row) {
-            $fieldNames = [];
             if ((null !== $modules) && ($modules->isRegistered('phire-fields'))) {
                 $class = 'Phire\Forms\Model\Form';
                 $sql   = \Phire\Fields\Table\Fields::sql();
@@ -55,7 +54,9 @@ class FormSubmission extends AbstractModel
                             'model'    => 'Phire\Forms\Model\FormSubmission'
                         ]);
                         foreach ($fv->rows() as $fv) {
-                            $fieldNames[$field->name] = $field->type;
+                            if (!array_key_exists($field->name, $fieldNames)) {
+                                $fieldNames[$field->name] = $field->type;
+                            }
                             $rows[$i][$field->name]   = json_decode($fv->value, true);
                         }
                     } else {
@@ -70,7 +71,9 @@ class FormSubmission extends AbstractModel
                             'revision' => 0
                         ]);
 
-                        $fieldNames[$field->name] = $field->type;
+                        if (!array_key_exists($field->name, $fieldNames)) {
+                            $fieldNames[$field->name] = $field->type;
+                        }
 
                         if ($fv->count() > 1) {
                             $rows[$i][$field->name] = [];
