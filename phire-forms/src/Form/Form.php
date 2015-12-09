@@ -70,6 +70,7 @@ class Form extends \Pop\Form\Form
 
         $sql = \Phire\Fields\Table\Fields::sql();
         $sql->select()->where('models LIKE :models');
+        $sql->select()->orderBy('order', 'ASC');
 
         $value  = ($sql->getDbType() == \Pop\Db\Sql::SQLITE) ? '%Phire\\Forms\\Model\\Form%' : '%Phire\\\\Forms\\\\Model\\\\Form%';
         $fields = \Phire\Fields\Table\Fields::execute((string)$sql, ['models' => $value]);
