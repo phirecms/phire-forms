@@ -123,6 +123,26 @@ class IndexController extends AbstractController
     }
 
     /**
+     * Copy action method
+     *
+     * @param  int $id
+     * @return void
+     */
+    public function copy($id)
+    {
+        $form = new Model\Form();
+        $form->getById($id);
+
+        if (!isset($form->id)) {
+            $this->redirect(BASE_PATH . APP_URI . '/forms');
+        }
+
+        $form->copy($id, $this->application->modules());
+        $this->sess->setRequestValue('saved', true);
+        $this->redirect(BASE_PATH . APP_URI . '/forms');
+    }
+
+    /**
      * Submissions action method
      *
      * @param  int $id

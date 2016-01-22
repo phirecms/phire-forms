@@ -18,6 +18,7 @@
                 <th><a href="<?=$phireUri . '/forms?sort=name';?>">Name</a></th>
                 <th># of Fields</th>
                 <th>Submissions</th>
+                <th class="text-center"><?php if ($acl->isAllowed($user->role, 'forms', 'copy')): ?>Copy<?php else: ?>&nbsp;<?php endif; ?></th>
                 <th class="text-center"><?php if ($acl->isAllowed($user->role, 'forms', 'edit')): ?>Edit<?php else: ?>&nbsp;<?php endif; ?></th>
                 <th class="text-center"><?php if ($acl->isAllowed($user->role, 'forms', 'remove')): ?><input type="checkbox" name="checkall" id="checkall" value="rm_forms" /><?php else: ?>&nbsp;<?php endif; ?></th>
             </tr>
@@ -28,6 +29,7 @@
                 <td><?=$form->name; ?></td>
                 <td><?=$form->num_of_fields; ?></td>
                 <td><?=$form->num_of_submissions; ?><?=(($form->num_of_submissions > 0) ? ' [ <a class="normal-link" href="' . $phireUri . '/forms/submissions/' . $form->id . '">View</a> ]' : null); ?></td>
+                <td><?php if ($acl->isAllowed($user->role, 'forms', 'copy')): ?><a class="copy-link" href="<?=$phireUri . '/forms/copy/' . $form->id; ?>">Copy</a><?php else: ?>&nbsp;<?php endif; ?></td>
                 <td><?php if ($acl->isAllowed($user->role, 'forms', 'edit')): ?><a class="edit-link" href="<?=$phireUri . '/forms/edit/' . $form->id; ?>">Edit</a><?php else: ?>&nbsp;<?php endif; ?></td>
                 <td class="text-center"><?php if ($acl->isAllowed($user->role, 'forms', 'remove')): ?><input type="checkbox" name="rm_forms[]" id="rm_forms<?=$i++; ?>" value="<?=$form->id; ?>" /><?php else: ?>&nbsp;<?php endif; ?></td>
             </tr>

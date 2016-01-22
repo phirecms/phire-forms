@@ -5,6 +5,7 @@ return [
         'index',
         'add',
         'edit',
+        'copy',
         'remove'
     ],
     'submissions' => [

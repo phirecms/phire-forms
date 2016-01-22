@@ -26,6 +26,14 @@ return [
                 'permission' => 'edit'
             ]
         ],
+        '/forms/copy/:id' => [
+            'controller' => 'Phire\Forms\Controller\IndexController',
+            'action'     => 'copy',
+            'acl'        => [
+                'resource'   => 'forms',
+                'permission' => 'copy'
+            ]
+        ],
         '/forms/remove[/]' => [
             'controller' => 'Phire\Forms\Controller\IndexController',
             'action'     => 'remove',

@@ -134,6 +134,75 @@ class Form extends AbstractModel
     }
 
     /**
+     * Copy form
+     *
+     * @param  int $id
+     * @param  \Pop\Module\Manager $modules
+     * @return void
+     */
+    public function copy($id, \Pop\Module\Manager $modules = null)
+    {
+        $oldForm = Table\Forms::findById((int)$id);
+
+        if (isset($oldForm->id)) {
+            $i        = 1;
+            $name     = $oldForm->name . ' (Copy ' . $i . ')';
+            $dupeForm = Table\forms::findBy(['name' => $name]);
+
+            while (isset($dupeForm->id)) {
+                $i++;
+                $name = $oldForm->name . ' (Copy ' . $i . ')';
+                $dupeForm = Table\forms::findBy(['name' => $name]);
+            }
+
+            $form = new Table\Forms([
+                'name'              => $name,
+                'method'            => (!empty($oldForm->method) ? $oldForm->method : null),
+                'to'                => (!empty($oldForm->to) ? $oldForm->to : null),
+                'from'              => (!empty($oldForm->from) ? $oldForm->from : null),
+                'reply_to'          => (!empty($oldForm->reply_to) ? $oldForm->reply_to : null),
+                'action'            => (!empty($oldForm->action) ? $oldForm->action : null),
+                'redirect'          => (!empty($oldForm->redirect) ? $oldForm->redirect : null),
+                'attributes'        => (!empty($oldForm->attributes) ? $oldForm->attributes : null),
+                'submit_value'      => (!empty($oldForm->submit_value) ? $oldForm->submit_value : null),
+                'submit_attributes' => (!empty($oldForm->submit_attributes) ? $oldForm->submit_attributes : null),
+                'use_captcha'       => (!empty($oldForm->use_captcha) ? (int)$oldForm->use_captcha : null),
+                'use_csrf'          => (!empty($oldForm->use_csrf) ? (int)$oldForm->use_csrf : null),
+                'force_ssl'         => (!empty($oldForm->force_ssl) ? (int)$oldForm->force_ssl : null)
+            ]);
+
+            $form->save();
+
+            $flds = null;
+            if ((null !== $modules) && ($modules->isRegistered('phire-fields'))) {
+                $flds = \Phire\Fields\Table\Fields::findAll();
+            }
+            if (null !== $flds) {
+                foreach ($flds->rows() as $f) {
+                    if (!empty($f->models)) {
+                        $models = (unserialize($f->models));
+                        print_r($models);
+                        foreach ($models as $model) {
+                            if (($model['model'] == 'Phire\Forms\Model\Form') && ($oldForm->id == $model['type_value'])) {
+                                $models[] = [
+                                    'model'      => 'Phire\Forms\Model\Form',
+                                    'type_field' => 'id',
+                                    'type_value' => $form->id
+                                ];
+                                $newField = \Phire\Fields\Table\Fields::findById($f->id);
+                                if (isset($newField->id)) {
+                                    $newField->models = serialize($models);
+                                    $newField->save();
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    /**
      * Remove a form
      *
      * @param  array $fields
