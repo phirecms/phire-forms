@@ -13,7 +13,7 @@
             <tr>
                 <td><?=ucwords(str_replace(['_', '-'], [' ', ' '], $name)); ?></td>
                 <td><?php
-if ($fieldTypes[$name] == 'file'):
+if (($fieldTypes[$name] == 'file') && !empty($value) && file_exists($_SERVER['DOCUMENT_ROOT'] . BASE_PATH . CONTENT_PATH . '/files/' . $value)):
     $size = filesize($_SERVER['DOCUMENT_ROOT'] . BASE_PATH. CONTENT_PATH . '/files/' . $value);
     if ($size >= 1000000):
         $size = round(($size / 1000000), 2) . ' MB';

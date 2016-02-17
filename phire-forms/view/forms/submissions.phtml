@@ -41,7 +41,7 @@ foreach ($fields as $name => $type):
 ?>
                 <td><?php
 if (isset($submission[$name])):
-    if ($type == 'file'):
+    if (($type == 'file') && !empty($submission[$name]) && file_exists($_SERVER['DOCUMENT_ROOT'] . BASE_PATH . CONTENT_PATH . '/files/' . $submission[$name])):
         $size = filesize($_SERVER['DOCUMENT_ROOT'] . BASE_PATH. CONTENT_PATH . '/files/' . $submission[$name]);
         if ($size >= 1000000):
             $size = round(($size / 1000000), 2) . ' MB';
