@@ -183,8 +183,8 @@ class FormSubmission extends AbstractModel
                     $field = \Phire\Fields\Table\Fields::findById($value->field_id);
                     if (isset($field->id) && ($field->type == 'file')) {
                         $file = json_decode($value->value);
-                        if (file_exists($_SERVER['DOCUMENT_ROOT'] . BASE_PATH. CONTENT_PATH . '/assets/phire-fields/files/' . $file)) {
-                            unlink($_SERVER['DOCUMENT_ROOT'] . BASE_PATH. CONTENT_PATH . '/assets/phire-fields/files/' . $file);
+                        if (file_exists($_SERVER['DOCUMENT_ROOT'] . BASE_PATH. CONTENT_PATH . '/files/' . $file)) {
+                            unlink($_SERVER['DOCUMENT_ROOT'] . BASE_PATH. CONTENT_PATH . '/files/' . $file);
                         }
                     }
                 }

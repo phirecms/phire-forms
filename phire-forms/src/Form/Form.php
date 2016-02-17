@@ -174,8 +174,8 @@ class Form extends \Pop\Form\Form
         if ($_FILES) {
             foreach ($_FILES as $key => $value) {
                 if (isset($value['tmp_name']) && !empty($value['tmp_name']) && class_exists('Phire\Fields\Model\Field')) {
-                    $upload       = new Upload(__DIR__ . '/../../../../assets/phire-fields/files');
-                    $filename     = $upload->checkFilename($value['name'], __DIR__ . '/../../../../assets/phire-fields/files');
+                    $upload       = new Upload($_SERVER['DOCUMENT_ROOT'] . BASE_PATH . CONTENT_PATH . '/files');
+                    $filename     = $upload->checkFilename($value['name'], $_SERVER['DOCUMENT_ROOT'] . BASE_PATH . CONTENT_PATH . '/files');
                     $fields[$key] = $filename;
                     $files[]      = $filename;
                     $upload->upload($value);
@@ -246,8 +246,8 @@ class Form extends \Pop\Form\Form
 
             if (count($files) > 0) {
                 foreach ($files as $file) {
-                    if (file_exists(__DIR__ . '/../../../../assets/phire-fields/files/' . $file)) {
-                        $mail->attachFile(__DIR__ . '/../../../../assets/phire-fields/files/' . $file);
+                    if (file_exists($_SERVER['DOCUMENT_ROOT'] . BASE_PATH . CONTENT_PATH . '/files/' . $file)) {
+                        $mail->attachFile($_SERVER['DOCUMENT_ROOT'] . BASE_PATH . CONTENT_PATH . '/files/' . $file);
                     }
                 }
             }

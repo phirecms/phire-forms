@@ -40,6 +40,18 @@ class Form
         if (null !== $models) {
             $application->module('phire-forms')->mergeConfig(['models' => $models]);
         }
+
+        if (!file_exists($_SERVER['DOCUMENT_ROOT'] . BASE_PATH . CONTENT_PATH . '/files')) {
+            mkdir($_SERVER['DOCUMENT_ROOT'] . BASE_PATH . CONTENT_PATH . '/files');
+            chmod($_SERVER['DOCUMENT_ROOT'] . BASE_PATH . CONTENT_PATH . '/files', 0777);
+            if (file_exists($_SERVER['DOCUMENT_ROOT'] . BASE_PATH . CONTENT_PATH . '/index.html')) {
+                copy(
+                    $_SERVER['DOCUMENT_ROOT'] . BASE_PATH . CONTENT_PATH . '/index.html',
+                    $_SERVER['DOCUMENT_ROOT'] . BASE_PATH . CONTENT_PATH . '/files/index.html'
+                );
+                chmod($_SERVER['DOCUMENT_ROOT'] . BASE_PATH . CONTENT_PATH . '/files/index.html', 0777);
+            }
+        }
     }
 
     /**
