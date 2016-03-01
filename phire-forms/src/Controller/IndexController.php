@@ -76,6 +76,36 @@ class IndexController extends AbstractController
     }
 
     /**
+     * Manage action method
+     *
+     * @param  int $id
+     * @return void
+     */
+    public function manage($id)
+    {
+        $form = new Model\Form();
+        $form->getById($id);
+
+        if (!isset($form->id)) {
+            $this->redirect(BASE_PATH . APP_URI . '/forms');
+        }
+
+        $this->prepareView('forms/manage.phtml');
+        $this->view->title         = 'Forms : Manage Fields';
+        $this->view->form_id   = $form->id;
+        $this->view->form_name = $form->name;
+        $this->view->fields    = $form->getFields($this->application->modules());
+
+        if ($this->request->isPost()) {
+            $form->saveFields($this->request->getPost(), $this->application->modules());
+            $this->sess->setRequestValue('saved', true);
+            $this->redirect(BASE_PATH . APP_URI . '/forms/manage/'. $form->id);
+        }
+
+        $this->send();
+    }
+
+    /**
      * Edit action method
      *
      * @param  int $id

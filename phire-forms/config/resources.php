@@ -5,6 +5,7 @@ return [
         'index',
         'add',
         'edit',
+        'manage',
         'copy',
         'remove'
     ],

@@ -77,6 +77,75 @@ class Form extends AbstractModel
     }
 
     /**
+     * Get all available fields
+     *
+     * @param  \Pop\Module\Manager $modules
+     * @return array
+     */
+    public function getFields(\Pop\Module\Manager $modules = null)
+    {
+        $allFields = [];
+
+        if ((null !== $modules) && ($modules->isRegistered('phire-fields'))) {
+            $fields = \Phire\Fields\Table\Fields::findAll();
+            foreach ($fields->rows() as $field) {
+                $field->models = (!empty($field->models)) ? unserialize($field->models) : [];
+                $allFields[$field->id] = $field;
+            }
+        }
+
+        return $allFields;
+    }
+
+    /**
+     * Get all available fields
+     *
+     * @param  array               $post
+     * @param  \Pop\Module\Manager $modules
+     * @return void
+     */
+    public function saveFields(array $post, \Pop\Module\Manager $modules = null)
+    {
+        if ((null !== $modules) && ($modules->isRegistered('phire-fields'))) {
+
+            // Remove existing field-to-form relationships
+            $fields = \Phire\Fields\Table\Fields::findAll();
+            foreach ($fields->rows() as $field) {
+                $models = (!empty($field->models)) ? unserialize($field->models) : [];
+                if (count($models) > 0) {
+                    foreach ($models as $key => $model) {
+                        if (($model['model'] == 'Phire\Forms\Model\Form') && ($model['type_value'] == $post['form_id'])) {
+                            unset($models[$key]);
+                        }
+                    }
+                }
+                $f = \Phire\Fields\Table\Fields::findById((int)$field->id);
+                if (isset($f->id)) {
+                    $f->models = serialize($models);
+                    $f->save();
+                }
+            }
+
+            // Save new field-to-form relationships
+            if (isset($post['process_forms_manage']) && (count($post['process_forms_manage']) > 0)) {
+                foreach ($post['process_forms_manage'] as $id) {
+                    $field = \Phire\Fields\Table\Fields::findById((int)$id);
+                    if (isset($field->id)) {
+                        $models = (!empty($field->models)) ? unserialize($field->models) : [];
+                        $models[] = [
+                            'model'      => 'Phire\Forms\Model\Form',
+                            'type_field' => 'id',
+                            'type_value' => (int)$post['form_id']
+                        ];
+                        $field->models = serialize($models);
+                        $field->save();
+                    }
+                }
+            }
+        }
+    }
+
+    /**
      * Save new form
      *
      * @param  array $fields

@@ -15,6 +15,15 @@ jax(document).ready(function(){
             return jax('#forms-form').checkValidate('checkbox', true);
         });
     }
+    if (jax('#forms-manage-form')[0] != undefined) {
+        jax('#checkall').click(function(){
+            if (this.checked) {
+                jax('#forms-manage-form').checkAll(this.value);
+            } else {
+                jax('#forms-manage-form').uncheckAll(this.value);
+            }
+        });
+    }
     if (jax('#submissions-form')[0] != undefined) {
         jax('#checkall').click(function(){
             if (this.checked) {

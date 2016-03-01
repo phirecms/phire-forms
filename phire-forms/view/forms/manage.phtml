@@ -1,0 +1,44 @@
+<?php include $phireHeader; ?>
+    <h1 class="forms-header"><?=$title; ?> : <?=$form_name; ?></h1>
+    <nav id="sub-nav">
+<?php if ($acl->isAllowed($user->role, 'forms', 'add')): ?>
+        <nav><a href="<?=$phireUri; ?>/forms/add">+ Add</a></nav>
+<?php endif; ?>
+        <nav><a href="<?=$phireUri; ?>/forms">Back</a></nav>
+    </nav>
+<?php if (count($fields) > 0): ?>
+    <form id="forms-manage-form" action="<?=$phireUri . '/forms/manage/' . $form_id; ?>" method="post">
+        <table class="data-table" cellpadding="0" cellspacing="0" border="0">
+            <tr>
+                <th>#</th>
+                <th>Name</th>
+                <th>Label</th>
+                <th>Type</th>
+                <th class="text-center"><input type="checkbox" name="checkall" id="checkall" value="process_forms_manage" /></th>
+            </tr>
+<?php $i = 1; ?>
+<?php foreach ($fields as $field): ?>
+<?php
+$checked = null;
+foreach ($field->models as $model):
+    if (($model['model'] = 'Phire\Forms\Model\Form') && ($model['type_value'] == $form_id)):
+        $checked = ' checked="checked" ';
+        break;
+    endif;
+endforeach;
+?>
+            <tr>
+                <td><?=$field->id; ?></td>
+                <td><?=$field->name; ?></td>
+                <td><?=$field->label; ?></td>
+                <td><?=$field->type; ?></td>
+                <td class="text-center"><input type="checkbox" name="process_forms_manage[]" id="process_forms_manage<?=$i++; ?>" value="<?=$field->id; ?>" <?=$checked;?>/></td>
+            </tr>
+<?php endforeach; ?>
+        </table>
+        <div id="form-footer"><input type="submit" name="submit" class="process-btn" value="Process" /><input type="hidden" name="form_id" id="form_id" value="<?=$form_id; ?>" /></div>
+    </form>
+<?php else: ?>
+    <p>There are currently no fields.</p>
+<?php endif; ?>
+<?php include $phireFooter; ?>

@@ -27,7 +27,7 @@
             <tr>
                 <td><?=$form->id; ?></td>
                 <td><?=$form->name; ?></td>
-                <td><?=$form->num_of_fields; ?></td>
+                <td><?=$form->num_of_fields; ?><?php if ($acl->isAllowed($user->role, 'forms', 'manage')): ?> [ <a class="normal-link" href="<?=$phireUri . '/forms/manage/' . $form->id; ?>">Manage</a> ]</a><?php endif; ?></td>
                 <td><?=$form->num_of_submissions; ?><?=(($form->num_of_submissions > 0) ? ' [ <a class="normal-link" href="' . $phireUri . '/forms/submissions/' . $form->id . '">View</a> ]' : null); ?></td>
                 <td><?php if ($acl->isAllowed($user->role, 'forms', 'copy')): ?><a class="copy-link" href="<?=$phireUri . '/forms/copy/' . $form->id; ?>">Copy</a><?php else: ?>&nbsp;<?php endif; ?></td>
                 <td><?php if ($acl->isAllowed($user->role, 'forms', 'edit')): ?><a class="edit-link" href="<?=$phireUri . '/forms/edit/' . $form->id; ?>">Edit</a><?php else: ?>&nbsp;<?php endif; ?></td>

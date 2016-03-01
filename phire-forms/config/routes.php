@@ -18,6 +18,14 @@ return [
                 'permission' => 'add'
             ]
         ],
+        '/forms/manage/:id' => [
+            'controller' => 'Phire\Forms\Controller\IndexController',
+            'action'     => 'manage',
+            'acl'        => [
+                'resource'   => 'forms',
+                'permission' => 'manage'
+            ]
+        ],
         '/forms/edit/:id' => [
             'controller' => 'Phire\Forms\Controller\IndexController',
             'action'     => 'edit',
