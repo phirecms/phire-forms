@@ -164,9 +164,10 @@ class Form extends AbstractModel
             'attributes'        => (!empty($fields['attributes']) ? $fields['attributes'] : null),
             'submit_value'      => (!empty($fields['submit_value']) ? $fields['submit_value'] : null),
             'submit_attributes' => (!empty($fields['submit_attributes']) ? $fields['submit_attributes'] : null),
-            'use_captcha'       => (!empty($fields['use_captcha']) ? (int)$fields['use_captcha'] : null),
-            'use_csrf'          => (!empty($fields['use_csrf']) ? (int)$fields['use_csrf'] : null),
-            'force_ssl'         => (!empty($fields['force_ssl']) ? (int)$fields['force_ssl'] : null)
+            'filter'            => (!empty($fields['filter']) ? (int)$fields['filter'] : 0),
+            'use_captcha'       => (!empty($fields['use_captcha']) ? (int)$fields['use_captcha'] : 0),
+            'use_csrf'          => (!empty($fields['use_csrf']) ? (int)$fields['use_csrf'] : 0),
+            'force_ssl'         => (!empty($fields['force_ssl']) ? (int)$fields['force_ssl'] : 0)
         ]);
         $form->save();
 
@@ -193,9 +194,10 @@ class Form extends AbstractModel
             $form->attributes        = (!empty($fields['attributes']) ? $fields['attributes'] : null);
             $form->submit_value      = (!empty($fields['submit_value']) ? $fields['submit_value'] : null);
             $form->submit_attributes = (!empty($fields['submit_attributes']) ? $fields['submit_attributes'] : null);
-            $form->use_captcha       = (!empty($fields['use_captcha']) ? (int)$fields['use_captcha'] : null);
-            $form->use_csrf          = (!empty($fields['use_csrf']) ? (int)$fields['use_csrf'] : null);
-            $form->force_ssl         = (!empty($fields['force_ssl']) ? (int)$fields['force_ssl'] : null);
+            $form->filter            = (!empty($fields['filter']) ? (int)$fields['filter'] : 0);
+            $form->use_captcha       = (!empty($fields['use_captcha']) ? (int)$fields['use_captcha'] : 0);
+            $form->use_csrf          = (!empty($fields['use_csrf']) ? (int)$fields['use_csrf'] : 0);
+            $form->force_ssl         = (!empty($fields['force_ssl']) ? (int)$fields['force_ssl'] : 0);
             $form->save();
 
             $this->data = array_merge($this->data, $form->getColumns());

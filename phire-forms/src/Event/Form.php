@@ -73,7 +73,9 @@ class Form
                             $form = new \Phire\Forms\Form\Form($id);
                             if ($form->isSubmitted()) {
                                 $values = ($form->getMethod() == 'post') ? $_POST : $_GET;
-                                $form->addFilter('strip_tags');
+                                if ($form->isFiltered()) {
+                                    $form->addFilter('strip_tags');
+                                }
                                 $form->setFieldValues($values);
                                 if ($form->isValid()) {
                                     $form->process();

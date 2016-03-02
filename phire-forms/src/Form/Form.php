@@ -25,6 +25,11 @@ class Form extends \Pop\Form\Form
     protected $message = null;
 
     /**
+     * Filter flag
+     */
+    protected $filter = true;
+
+    /**
      * Constructor method to instantiate the form object
      *
      * @param  mixed $id
@@ -47,6 +52,8 @@ class Form extends \Pop\Form\Form
         $fieldGroups      = [];
         $submitAttributes = [];
         $formAttributes   = [];
+
+        $this->filter = (bool)$form->filter;
 
         if (!empty($form->submit_attributes)) {
             $attribs = explode('" ', $form->submit_attributes);
@@ -90,14 +97,22 @@ class Form extends \Pop\Form\Form
             if (null !== $field->group_id) {
                 foreach ($field->models as $model) {
                     if ((null === $model['type_value']) || ($form->id == $model['type_value'])) {
-                        $fieldGroups[$field->group_id]['field_' . $field->id] = \Phire\Fields\Event\Field::createFieldConfig($field);
+                        $fieldConfig = \Phire\Fields\Event\Field::createFieldConfig($field);
+                        if (strpos($fieldConfig['label'], '<span class="editor-link-span">') !== false) {
+                            $fieldConfig['label'] = str_replace('<span class="editor-link-span">', '<span style="display: none;" class="editor-link-span">', $fieldConfig['label']);
+                        }
+                        $fieldGroups[$field->group_id]['field_' . $field->id] = $fieldConfig;
                         break;
                     }
                 }
             } else if (null === $field->group_id) {
                 foreach ($field->models as $model) {
                     if ((null === $model['type_value']) || ($form->id == $model['type_value'])) {
-                        $fieldGroups[0]['field_' . $field->id] = \Phire\Fields\Event\Field::createFieldConfig($field);
+                        $fieldConfig = \Phire\Fields\Event\Field::createFieldConfig($field);
+                        if (strpos($fieldConfig['label'], '<span class="editor-link-span">') !== false) {
+                            $fieldConfig['label'] = str_replace('<span class="editor-link-span">', '<span style="display: none;" class="editor-link-span">', $fieldConfig['label']);
+                        }
+                        $fieldGroups[0]['field_' . $field->id] = $fieldConfig;
                         break;
                     }
                 }
@@ -290,6 +305,16 @@ class Form extends \Pop\Form\Form
     public function isRedirect()
     {
         return $this->redirect;
+    }
+
+    /**
+     * Method to get the whether to filter the form
+     *
+     * @return boolean
+     */
+    public function isFiltered()
+    {
+        return $this->filter;
     }
 
     /**

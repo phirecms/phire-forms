@@ -24,6 +24,7 @@ CREATE TABLE IF NOT EXISTS `[{prefix}]forms` (
   `attributes` varchar(255),
   `submit_value` varchar(255),
   `submit_attributes` varchar(255),
+  `filter` int(1),
   `use_captcha` int(1),
   `use_csrf` int(1),
   `force_ssl` int(1),

@@ -19,12 +19,21 @@ return [
                 ],
                 'marked' => '1'
             ],
+            'filter' => [
+                'type'  => 'radio',
+                'label' => 'Filter',
+                'value' => [
+                    '1' => 'Yes',
+                    '0' => 'No'
+                ],
+                'marked' => '1'
+            ],
             'use_captcha' => [
                 'type'  => 'radio',
                 'label' => 'Use CAPTCHA',
                 'value' => [
-                    '0' => 'No',
-                    '1' => 'Yes'
+                    '1' => 'Yes',
+                    '0' => 'No'
                 ],
                 'marked' => '0'
             ],
@@ -32,8 +41,8 @@ return [
                 'type'  => 'radio',
                 'label' => 'Use CSRF',
                 'value' => [
-                    '0' => 'No',
-                    '1' => 'Yes'
+                    '1' => 'Yes',
+                    '0' => 'No'
                 ],
                 'marked' => '0'
             ],
@@ -41,8 +50,8 @@ return [
                 'type'  => 'radio',
                 'label' => 'Force SSL',
                 'value' => [
-                    '0' => 'No',
-                    '1' => 'Yes'
+                    '1' => 'Yes',
+                    '0' => 'No'
                 ],
                 'marked' => '0'
             ],
