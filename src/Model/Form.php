@@ -79,11 +79,10 @@ class Form extends AbstractModel
     /**
      * Get all available fields
      *
-     * @param  int                 $id
      * @param  \Pop\Module\Manager $modules
      * @return array
      */
-    public function getFields($id, \Pop\Module\Manager $modules = null)
+    public function getFields(\Pop\Module\Manager $modules = null)
     {
         $allFields = [];
 
@@ -91,11 +90,7 @@ class Form extends AbstractModel
             $fields = \Phire\Fields\Table\Fields::findAll();
             foreach ($fields->rows() as $field) {
                 $field->models = (!empty($field->models)) ? unserialize($field->models) : [];
-                foreach ($field->models as $model) {
-                    if (isset($model['model']) && ($model['model'] == 'Phire\Forms\Model\Form') && ($model['type_value'] == $id)) {
-                        $allFields[$field->id] = $field;
-                    }
-                }
+                $allFields[$field->id] = $field;
             }
         }
 

@@ -94,7 +94,7 @@ class IndexController extends AbstractController
         $this->view->title         = 'Forms : Manage Fields';
         $this->view->form_id   = $form->id;
         $this->view->form_name = $form->name;
-        $this->view->fields    = $form->getFields($id, $this->application->modules());
+        $this->view->fields    = $form->getFields($this->application->modules());
 
         if ($this->request->isPost()) {
             $form->saveFields($this->request->getPost(), $this->application->modules());
