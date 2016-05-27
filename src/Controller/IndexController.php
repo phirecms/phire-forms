@@ -1,5 +1,16 @@
 <?php
+/**
+ * Phire Forms Module
+ *
+ * @link       https://github.com/phirecms/phire-forms
+ * @author     Nick Sagona, III <dev@nolainteractive.com>
+ * @copyright  Copyright (c) 2009-2016 NOLA Interactive, LLC. (http://www.nolainteractive.com)
+ * @license    http://www.phirecms.org/license     New BSD License
+ */
 
+/**
+ * @namespace
+ */
 namespace Phire\Forms\Controller;
 
 use Phire\Forms\Model;
@@ -9,6 +20,16 @@ use Phire\Controller\AbstractController;
 use Pop\Data\Data;
 use Pop\Paginator\Paginator;
 
+/**
+ * Forms Index Controller class
+ *
+ * @category   Phire\Forms
+ * @package    Phire\Forms
+ * @author     Nick Sagona, III <dev@nolainteractive.com>
+ * @copyright  Copyright (c) 2009-2016 NOLA Interactive, LLC. (http://www.nolainteractive.com)
+ * @license    http://www.phirecms.org/license     New BSD License
+ * @version    1.0.0
+ */
 class IndexController extends AbstractController
 {
 

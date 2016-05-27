@@ -1,5 +1,7 @@
 <?php
-
+/**
+ * phire-forms form configuration
+ */
 return [
     'Phire\Forms\Form\FormObject' => [
         [

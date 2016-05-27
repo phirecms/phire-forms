@@ -1,10 +1,31 @@
 <?php
+/**
+ * Phire Forms Module
+ *
+ * @link       https://github.com/phirecms/phire-forms
+ * @author     Nick Sagona, III <dev@nolainteractive.com>
+ * @copyright  Copyright (c) 2009-2016 NOLA Interactive, LLC. (http://www.nolainteractive.com)
+ * @license    http://www.phirecms.org/license     New BSD License
+ */
 
+/**
+ * @namespace
+ */
 namespace Phire\Forms\Model;
 
 use Phire\Forms\Table;
 use Phire\Model\AbstractModel;
 
+/**
+ * Form Submission Model class
+ *
+ * @category   Phire\Forms
+ * @package    Phire\Forms
+ * @author     Nick Sagona, III <dev@nolainteractive.com>
+ * @copyright  Copyright (c) 2009-2016 NOLA Interactive, LLC. (http://www.nolainteractive.com)
+ * @license    http://www.phirecms.org/license     New BSD License
+ * @version    1.0.0
+ */
 class FormSubmission extends AbstractModel
 {
 
