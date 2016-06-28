@@ -57,7 +57,9 @@ class FormSubmission extends AbstractModel
         }
 
         $fieldNames = [];
+        $arrayRows  = [];
         foreach ($rows as $i => $row) {
+            $arrayRows[$i] = $row->getColumns();
             if ((null !== $modules) && ($modules->isRegistered('phire-fields'))) {
                 $class = 'Phire\Forms\Model\Form';
                 $sql   = \Phire\Fields\Table\Fields::sql();
@@ -78,7 +80,7 @@ class FormSubmission extends AbstractModel
                             if (!array_key_exists($field->name, $fieldNames)) {
                                 $fieldNames[$field->name] = $field->type;
                             }
-                            $rows[$i][$field->name]   = json_decode($fv->value, true);
+                            $arrayRows[$i][$field->name]   = json_decode($fv->value, true);
                         }
                     } else {
                         $fv = new \Pop\Db\Record();
@@ -97,20 +99,20 @@ class FormSubmission extends AbstractModel
                         }
 
                         if ($fv->count() > 1) {
-                            $rows[$i][$field->name] = [];
+                            $arrayRows[$i][$field->name] = [];
                             foreach ($fv->rows() as $f) {
-
-                                $rows[$i][$field->name][] = $f->value;
+                                $arrayRows[$i][$field->name][] = $f->value;
                             }
                         } else {
-                            $rows[$i][$field->name] = $fv->value;
+                            $arrayRows[$i][$field->name] = $fv->value;
                         }
                     }
                 }
             }
+            $arrayRows[$i] = new \ArrayObject($arrayRows[$i], \ArrayObject::ARRAY_AS_PROPS);
         }
 
-        return ['rows' => $rows, 'fields' => $fieldNames];
+        return ['rows' => $arrayRows, 'fields' => $fieldNames];
     }
 
     /**
